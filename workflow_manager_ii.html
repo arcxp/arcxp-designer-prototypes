@@ -1,0 +1,1996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow Manager II</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <style>
+        :root {
+            --color-primary: #8D8D8D;
+            --color-primary-hover: #AAAAAA;
+            --color-border: #888888;
+            --color-border-light: #D8D8D8;
+            --color-text: #000000;
+            --color-text-secondary: #333333;
+            --color-text-muted: #666666;
+            --color-bg: #ffffff;
+            --color-bg-hover: #EEEEEE;
+            --color-bg-secondary: #f8f9fa;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 12px;
+            --spacing-lg: 16px;
+            --spacing-xl: 20px;
+            --spacing-xxl: 24px;
+            --font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            --node-width: 180px;
+            --node-height: 100px;
+            --header-height: 60px;
+            --workbar-height: 60px;
+            --quick-view-width: 400px;
+        }
+        
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-family);
+            background: var(--color-bg);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* Button styles */
+        .btn {
+            padding: var(--spacing-sm) var(--spacing-lg);
+            font-size: 14px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            white-space: nowrap;
+            user-select: none;
+            min-height: 40px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--color-primary-hover);
+        }
+
+        .btn-general {
+            background: var(--color-bg);
+            color: var(--color-text-secondary);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-general:hover:not(:disabled) {
+            background: var(--color-bg-hover);
+        }
+
+        .btn-small {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            font-size: 12px;
+            min-height: 28px;
+        }
+
+        .btn-danger {
+            background: var(--color-bg);
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #dc3545;
+            color: white;
+        }
+        
+        /* Header styles */
+        .top-header {
+            background: #333;
+            color: white;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            padding: 0 var(--spacing-xl);
+            gap: var(--spacing-xl);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            width: 32px;
+            height: 32px;
+            border: 2px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            margin-right: var(--spacing-xl);
+            white-space: nowrap;
+        }
+        
+        .nav-items {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+            overflow-x: auto;
+        }
+        
+        .nav-item {
+            cursor: pointer;
+            padding: var(--spacing-sm) 0;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.2s;
+            white-space: nowrap;
+            user-select: none;
+        }
+        
+        .nav-item:hover {
+            border-bottom-color: white;
+        }
+        
+        .production-badge {
+            background: #28a745;
+            color: white;
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            white-space: nowrap;
+        }
+        
+        .user-icon {
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Main content and workbar */
+        .main-content {
+            flex: 1;
+            margin-top: var(--header-height);
+            height: calc(100vh - var(--header-height));
+            background: var(--color-bg);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .workbar {
+            background: var(--color-bg);
+            border-bottom: 1px solid var(--color-border-light);
+            height: var(--workbar-height);
+            display: flex;
+            align-items: center;
+            padding: 0 var(--spacing-xl);
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-shrink: 0;
+        }
+
+        .workbar h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--color-text);
+        }
+
+        .workbar-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+        }
+
+        /* Content area with quick view support */
+        .content-area {
+            flex: 1;
+            display: flex;
+            height: calc(100vh - var(--header-height) - var(--workbar-height));
+            position: relative;
+        }
+
+        .main-view {
+            flex: 1;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .main-view.with-quick-view {
+            margin-left: var(--quick-view-width);
+        }
+
+        /* Quick view pane */
+        .quick-view-pane {
+            position: fixed;
+            left: 0;
+            top: calc(var(--header-height) + var(--workbar-height));
+            width: var(--quick-view-width);
+            height: calc(100vh - var(--header-height) - var(--workbar-height));
+            background: var(--color-bg);
+            border-right: 1px solid var(--color-border-light);
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 200;
+            overflow-y: auto;
+        }
+
+        .quick-view-pane.open {
+            transform: translateX(0);
+        }
+
+        .quick-view-header {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--color-border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--color-bg);
+            position: sticky;
+            top: 0;
+            z-index: 201;
+        }
+
+        .quick-view-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--color-text);
+            margin: 0;
+        }
+
+        .quick-view-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: var(--spacing-xs);
+            color: var(--color-text-muted);
+            transition: color 0.2s;
+        }
+
+        .quick-view-close:hover {
+            color: var(--color-text);
+        }
+
+        .quick-view-content {
+            padding: var(--spacing-lg);
+        }
+
+        /* Form styles */
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--color-text);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--color-border);
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            min-height: 36px;
+            font-weight: 400;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-input.compact, .form-textarea.compact {
+            font-size: 12px;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            min-height: 32px;
+        }
+
+        .form-textarea.compact {
+            min-height: 60px;
+        }
+
+        /* Multi-select styles */
+        .multi-select-wrapper {
+            position: relative;
+        }
+
+        .multi-select-field {
+            min-height: 36px;
+            width: 100%;
+            border: 1px solid var(--color-border);
+            background: var(--color-bg);
+            padding: var(--spacing-xs);
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .multi-select-field.compact {
+            min-height: 32px;
+        }
+
+        .multi-select-field:hover {
+            border-color: var(--color-primary);
+        }
+
+        .multi-select-chiclets {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-xs);
+            min-height: 20px;
+        }
+
+        .chiclet {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            background: var(--color-primary);
+            color: white;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            font-size: 11px;
+            font-weight: 400;
+            max-width: 160px;
+            border-radius: 10px;
+        }
+
+        .chiclet-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .chiclet-remove {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: white;
+            padding: 0;
+            width: 14px;
+            height: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+            border-radius: 50%;
+        }
+
+        .chiclet-remove:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .multi-select-placeholder {
+            color: var(--color-text-muted);
+            font-size: 12px;
+            padding: var(--spacing-xs) 0;
+        }
+
+        .multi-select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            border-top: none;
+            z-index: 1000;
+            max-height: 200px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .multi-select-search {
+            padding: var(--spacing-sm);
+            border-bottom: 1px solid var(--color-border-light);
+        }
+
+        .multi-select-search-input {
+            width: 100%;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--color-border);
+            font-size: 12px;
+            background: var(--color-bg);
+            transition: border-color 0.2s;
+            min-height: 32px;
+        }
+
+        .multi-select-search-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .multi-select-options {
+            max-height: 140px;
+            overflow-y: auto;
+        }
+
+        .multi-select-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-sm);
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid var(--color-border-light);
+        }
+
+        .multi-select-option:last-child {
+            border-bottom: none;
+        }
+
+        .multi-select-option:hover {
+            background: var(--color-bg-hover);
+        }
+
+        .multi-select-option-add {
+            font-style: italic;
+            color: var(--color-primary);
+        }
+
+        .multi-select-option-empty {
+            padding: var(--spacing-sm);
+            color: var(--color-text-muted);
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .option-text {
+            color: var(--color-text);
+            font-weight: 400;
+        }
+
+        .option-selected {
+            color: var(--color-primary);
+            font-weight: bold;
+        }
+
+        /* Workflow card styles */
+        .workflow-card {
+            border: 1px solid var(--color-border-light);
+            background: var(--color-bg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .workflow-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-color: var(--color-border);
+        }
+
+        .workflow-card h3 {
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--color-text);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .workflow-card-link {
+            color: var(--color-text);
+            text-decoration: underline;
+            background: none;
+            border: none;
+            padding: 0;
+            font: inherit;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .workflow-card-link:hover {
+            opacity: 0.7;
+        }
+
+        .workflow-card-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+        }
+
+        .workflow-connections {
+            font-size: 12px;
+            color: var(--color-text-muted);
+            margin-top: var(--spacing-sm);
+            line-height: 1.4;
+        }
+
+        .workflow-connections strong {
+            color: var(--color-text-secondary);
+        }
+
+        /* Search and filter */
+        .search-filter-bar {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--color-border-light);
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+            background: var(--color-bg-secondary);
+        }
+
+        .search-input {
+            flex: 1;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--color-border);
+            font-size: 14px;
+            transition: border-color 0.2s;
+            min-height: 40px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        /* View toggle */
+        .view-toggle {
+            display: flex;
+            border: 1px solid var(--color-border);
+            overflow: hidden;
+        }
+
+        .view-toggle .btn {
+            border-right: 1px solid var(--color-border);
+            border-radius: 0;
+            padding: var(--spacing-sm) var(--spacing-md);
+        }
+
+        .view-toggle .btn:last-child {
+            border-right: none;
+        }
+
+        .view-toggle .btn.active {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        /* Workflow node styles */
+        .workflow-node {
+            position: absolute;
+            width: var(--node-width);
+            height: var(--node-height);
+            background: var(--color-bg);
+            border: 2px solid var(--color-text);
+            padding: var(--spacing-sm);
+            cursor: move;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            user-select: none;
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s ease;
+            will-change: transform;
+        }
+
+        .workflow-node:hover:not(.dragging) {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .workflow-node.dragging {
+            box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+            transform: rotate(2deg) scale(1.05);
+            z-index: 1000;
+            transition: none;
+            opacity: 0.95;
+        }
+
+        .workflow-node h4 {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--color-text);
+            line-height: 1.2;
+            margin: 0;
+            flex: 1;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .workflow-moment {
+            font-size: 10px;
+            color: var(--color-text-muted);
+            margin: var(--spacing-xs) 0 var(--spacing-sm) 0;
+            line-height: 1.2;
+            flex: 1;
+        }
+
+        .workflow-moment-label {
+            font-weight: 700;
+        }
+
+        .workflow-moment-value {
+            font-style: italic;
+        }
+
+        .node-actions {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-xs);
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .view-details-btn {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 20px;
+            font-weight: 400;
+        }
+
+        .view-details-btn:hover {
+            background: var(--color-bg-hover);
+        }
+
+        /* Map container */
+        .map-container {
+            height: 100%;
+            position: relative;
+            overflow: auto;
+            background: var(--color-bg);
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            cursor: default;
+            min-width: 1600px;
+        }
+
+        .map-container.dragging {
+            cursor: grabbing;
+        }
+
+        /* List view */
+        .list-container {
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .list-content {
+            padding: var(--spacing-lg);
+        }
+
+        /* Empty state */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            color: var(--color-text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: var(--spacing-lg);
+            opacity: 0.5;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: calc(var(--header-height) + var(--spacing-lg));
+            right: var(--spacing-lg);
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            padding: var(--spacing-md) var(--spacing-lg);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification.success {
+            border-left: 4px solid #28a745;
+        }
+
+        .notification.error {
+            border-left: 4px solid #dc3545;
+        }
+
+        /* Connection points */
+        .connection-point {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--color-text);
+            border-radius: 50%;
+            background: var(--color-bg);
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 20;
+        }
+
+        .connection-point.in-point {
+            left: -8px;
+        }
+
+        .connection-point.out-point {
+            right: -8px;
+        }
+
+        .connection-point.connected {
+            background: var(--color-text);
+        }
+
+        .connection-point.highlight {
+            background: #ff69b4;
+            border-color: #ff69b4;
+            transform: translateY(-50%) scale(1.3);
+        }
+
+        .workflow-node.connection-target {
+            border-color: #ff69b4;
+            box-shadow: 0 0 0 2px rgba(255, 105, 180, 0.3);
+        }
+
+        .workflow-node.connection-target .connection-point.in-point {
+            background: #ff69b4;
+            border-color: #ff69b4;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.2); }
+            100% { transform: translateY(-50%) scale(1); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .nav-items {
+                display: none;
+            }
+            
+            .workbar {
+                padding: 0 var(--spacing-md);
+            }
+            
+            .workbar-actions {
+                flex-direction: column;
+                gap: var(--spacing-sm);
+            }
+            
+            .search-filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .workflow-node {
+                width: 160px;
+                height: 70px;
+            }
+
+            .quick-view-pane {
+                width: 100%;
+                left: 0;
+                transform: translateX(-100%);
+            }
+
+            .quick-view-pane.open {
+                transform: translateX(0);
+            }
+
+            .main-view.with-quick-view {
+                margin-left: 0;
+            }
+        }
+
+        /* Focus states for accessibility */
+        .btn:focus-visible,
+        .form-input:focus,
+        .form-textarea:focus,
+        .search-input:focus {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 2px;
+        }
+
+        /* Skip link for accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: var(--color-text);
+            color: var(--color-bg);
+            padding: 8px;
+            z-index: 1001;
+            text-decoration: none;
+            transition: top 0.3s;
+        }
+
+        .skip-link:focus {
+            top: 6px;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <!-- Navigation Header -->
+    <header class="top-header" role="banner">
+        <div class="logo" aria-label="Workflow Manager">W</div>
+        <div class="product-name">Workflow Manager II</div>
+        <nav class="nav-items" role="navigation" aria-label="Main navigation">
+            <div class="nav-item" role="button" tabindex="0">Workflows</div>
+            <div class="nav-item" role="button" tabindex="0">Agents</div>
+            <div class="nav-item" role="button" tabindex="0">Content</div>
+            <div class="nav-item" role="button" tabindex="0">Analytics</div>
+            <div class="nav-item" role="button" tabindex="0">Settings</div>
+        </nav>
+        <div class="production-badge">Production</div>
+        <div class="user-info">
+            <span>John Smith</span>
+            <div class="user-icon" aria-label="User avatar"></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content" id="main-content">
+        <div id="app-root"></div>
+    </main>
+
+    <script type="text/babel">
+        const { useState, useRef, useCallback, useEffect, useMemo, memo } = React;
+
+        // Constants
+        const VIEW_MODES = { MAP: 'map', LIST: 'list' };
+
+        // Sample workflow data
+        const sampleWorkflows = [
+            {
+                id: 'wf1',
+                name: 'Story start',
+                x: 100, y: 200,
+                prompt: 'Initiate the story creation process based on promoted themes. Evaluate theme relevance, assign initial resources, and set up the foundation for story development.',
+                input: ['theme_data', 'promotion_details', 'editorial_calendar', 'resource_availability'],
+                agents: ['Internal AI'],
+                output: ['story_foundation', 'initial_assignment', 'project_setup'],
+                workflowTriggers: ['Theme promoted'],
+                inputConnections: [],
+                outputConnections: ['wf2'],
+                createdAt: '01/15/2024 at 14:30',
+                updatedAt: '01/20/2024 at 16:45'
+            },
+            {
+                id: 'wf2',
+                name: 'Apply research',
+                x: 350, y: 200,
+                prompt: 'Conduct comprehensive research based on the story foundation. Gather relevant data, sources, and background information to support the story development.',
+                input: ['story_foundation', 'research_requirements', 'source_database', 'fact_checking_guidelines'],
+                agents: ['Internal AI'],
+                output: ['research_results', 'verified_sources', 'research_summary'],
+                workflowTriggers: [],
+                inputConnections: ['wf1'],
+                outputConnections: ['wf3'],
+                createdAt: '01/10/2024 at 09:15',
+                updatedAt: '01/18/2024 at 11:22'
+            },
+            {
+                id: 'wf3',
+                name: 'Generate draft',
+                x: 600, y: 200,
+                prompt: 'Create the initial draft using research results and story foundation. Structure the content with proper narrative flow and incorporate all research findings.',
+                input: ['research_results', 'verified_sources', 'story_foundation', 'style_guidelines'],
+                agents: ['Internal AI'],
+                output: ['draft_content', 'structure_outline', 'content_metrics'],
+                workflowTriggers: [],
+                inputConnections: ['wf2'],
+                outputConnections: ['wf4'],
+                createdAt: '01/08/2024 at 13:45',
+                updatedAt: '01/25/2024 at 10:30'
+            },
+            {
+                id: 'wf4',
+                name: 'Editorial review',
+                x: 850, y: 200,
+                prompt: 'Review the generated draft for editorial standards, accuracy, and quality. Provide feedback and approve or request revisions.',
+                input: ['draft_content', 'structure_outline', 'editorial_standards', 'review_criteria'],
+                agents: ['Internal AI'],
+                output: ['review_feedback', 'approval_status', 'revision_notes'],
+                workflowTriggers: [],
+                inputConnections: ['wf3'],
+                outputConnections: ['wf5'],
+                createdAt: '01/12/2024 at 08:20',
+                updatedAt: '01/22/2024 at 14:15'
+            },
+            {
+                id: 'wf5',
+                name: 'Publish coordinator',
+                x: 1100, y: 200,
+                prompt: 'Coordinate the publishing process after editorial approval. Handle scheduling, distribution, and publication logistics.',
+                input: ['review_feedback', 'approval_status', 'publishing_schedule', 'distribution_channels'],
+                agents: ['Internal AI'],
+                output: ['publication_plan', 'scheduled_release', 'distribution_setup'],
+                workflowTriggers: [],
+                inputConnections: ['wf4'],
+                outputConnections: ['wf6'],
+                createdAt: '01/14/2024 at 12:00',
+                updatedAt: '01/26/2024 at 17:30'
+            },
+            {
+                id: 'wf6',
+                name: 'Performance review',
+                x: 1350, y: 200,
+                prompt: 'Analyze the performance and impact of the published content. Track metrics, engagement, and overall success indicators.',
+                input: ['publication_plan', 'performance_metrics', 'engagement_data', 'success_criteria'],
+                agents: ['Internal AI'],
+                output: ['performance_report', 'success_analysis', 'improvement_recommendations'],
+                workflowTriggers: [],
+                inputConnections: ['wf5'],
+                outputConnections: [],
+                createdAt: '01/16/2024 at 15:10',
+                updatedAt: '01/28/2024 at 09:45'
+            }
+        ];
+
+        // Notification Component
+        const Notification = memo(({ message, type, onClose }) => {
+            useEffect(() => {
+                const timer = setTimeout(onClose, 3000);
+                return () => clearTimeout(timer);
+            }, [onClose]);
+
+            return (
+                <div className={`notification ${type}`} role="alert">
+                    {message}
+                </div>
+            );
+        });
+
+        // Multi-Select Component (Compact version for quick view)
+        const MultiSelect = memo(({ label, value, onChange, placeholder, tagType, workflows = [], compact = false }) => {
+            const [isOpen, setIsOpen] = useState(false);
+            const [searchTerm, setSearchTerm] = useState('');
+            const componentRef = useRef(null);
+            const searchInputRef = useRef(null);
+
+            const getDefaultOptions = useCallback((fieldType) => {
+                const baseOptions = {
+                    moment: ['Theme promoted', 'Editorial flag', 'User registration', 'User login', 'Page load', 'Form submission', 'Payment completed', 'Weekly schedule', 'Daily batch', 'System startup', 'Data updated', 'User milestone reached'],
+                    input: ['user_id', 'onboarding_status', 'user_preferences', 'payment_status', 'profile_data', 'session_data', 'behavioral_data', 'email_address', 'subscription_tier', 'last_login'],
+                    agents: ['Internal AI', 'CustomerBot3000'],
+                    conclusion: ['Trigger next workflow', 'Send notification', 'Update user status', 'Generate report', 'Send email', 'Log event', 'Create task', 'Schedule follow-up', 'Mark complete'],
+                    output: ['onboarding_complete', 'user_status', 'processed_data', 'email_sent', 'analytics_report', 'user_insights', 'notification_status', 'workflow_result', 'system_update', 'validation_result']
+                };
+                
+                if (fieldType === 'moment' || fieldType === 'conclusion') {
+                    const workflowNames = workflows
+                        .filter(w => w.id !== (value.length > 0 ? null : null))
+                        .map(w => w.name)
+                        .filter(Boolean);
+                    return [...baseOptions[fieldType], ...workflowNames];
+                }
+                
+                return baseOptions[fieldType] || [];
+            }, [workflows]);
+
+            const allOptions = useMemo(() => getDefaultOptions(tagType), [tagType, getDefaultOptions]);
+
+            const filteredOptions = useMemo(() => 
+                allOptions.filter(option =>
+                    option.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                    !value.includes(option)
+                ), [allOptions, searchTerm, value]);
+
+            const handleToggleDropdown = useCallback(() => {
+                setIsOpen(prev => !prev);
+                if (!isOpen) setSearchTerm('');
+            }, [isOpen]);
+
+            const handleRemoveItem = useCallback((itemToRemove) => {
+                onChange(value.filter(item => item !== itemToRemove));
+            }, [value, onChange]);
+
+            const handleSelectItem = useCallback((item) => {
+                if (value.includes(item)) {
+                    onChange(value.filter(selected => selected !== item));
+                } else {
+                    onChange([...value, item]);
+                }
+            }, [value, onChange]);
+
+            const handleAddCustomItem = useCallback(() => {
+                const trimmedSearch = searchTerm.trim();
+                if (trimmedSearch && !value.includes(trimmedSearch) && !allOptions.includes(trimmedSearch)) {
+                    onChange([...value, trimmedSearch]);
+                    setSearchTerm('');
+                }
+            }, [searchTerm, value, allOptions, onChange]);
+
+            const handleKeyDown = useCallback((e) => {
+                if (e.key === 'Escape') {
+                    setIsOpen(false);
+                    setSearchTerm('');
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (searchTerm.trim() && filteredOptions.length === 0) {
+                        handleAddCustomItem();
+                    } else if (filteredOptions.length > 0) {
+                        handleSelectItem(filteredOptions[0]);
+                        setSearchTerm('');
+                    }
+                }
+            }, [searchTerm, filteredOptions, handleAddCustomItem, handleSelectItem]);
+
+            useEffect(() => {
+                const handleClickOutside = (event) => {
+                    if (componentRef.current && !componentRef.current.contains(event.target)) {
+                        setIsOpen(false);
+                        setSearchTerm('');
+                    }
+                };
+
+                if (isOpen) {
+                    document.addEventListener('mousedown', handleClickOutside);
+                    return () => document.removeEventListener('mousedown', handleClickOutside);
+                }
+            }, [isOpen]);
+
+            useEffect(() => {
+                if (isOpen && searchInputRef.current) {
+                    searchInputRef.current.focus();
+                }
+            }, [isOpen]);
+
+            return (
+                <div className="form-group">
+                    <label className="form-label">{label}</label>
+                    
+                    <div ref={componentRef} className="multi-select-wrapper">
+                        <div className={`multi-select-field ${compact ? 'compact' : ''}`} onClick={handleToggleDropdown}>
+                            <div className="multi-select-chiclets">
+                                {value.map((item, index) => (
+                                    <div key={index} className="chiclet">
+                                        <span className="chiclet-text">
+                                            {tagType === 'input' ? `[FIELD] ${item}` :
+                                             tagType === 'output' ? `[FIELD] ${item}` :
+                                             tagType === 'agents' ? `[AGENT] ${item}` :
+                                             (item.toLowerCase().includes('workflow') || workflows.some(w => w.name === item)) ? `[WORKFLOW] ${item}` : 
+                                             tagType === 'moment' ? `[EVENT] ${item}` :
+                                             tagType === 'conclusion' ? `[ACTION] ${item}` : item}
+                                        </span>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleRemoveItem(item);
+                                            }}
+                                            className="chiclet-remove"
+                                            aria-label={`Remove ${item}`}
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ))}
+                                
+                                {value.length === 0 && (
+                                    <div className="multi-select-placeholder">
+                                        {placeholder || 'Select items...'}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {isOpen && (
+                            <div className="multi-select-dropdown">
+                                <div className="multi-select-search">
+                                    <input
+                                        ref={searchInputRef}
+                                        type="text"
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        onKeyDown={handleKeyDown}
+                                        placeholder="Search or type to add..."
+                                        className="multi-select-search-input"
+                                    />
+                                </div>
+
+                                <div className="multi-select-options">
+                                    {filteredOptions.length > 0 ? (
+                                        filteredOptions.map((option, index) => (
+                                            <div
+                                                key={index}
+                                                onClick={() => handleSelectItem(option)}
+                                                className="multi-select-option"
+                                            >
+                                                <span className="option-text">{option}</span>
+                                                {value.includes(option) && (
+                                                    <span className="option-selected">✓</span>
+                                                )}
+                                            </div>
+                                        ))
+                                    ) : searchTerm.trim() ? (
+                                        <div
+                                            onClick={handleAddCustomItem}
+                                            className="multi-select-option multi-select-option-add"
+                                        >
+                                            <span className="option-text">Add "{searchTerm.trim()}"</span>
+                                        </div>
+                                    ) : (
+                                        <div className="multi-select-option-empty">
+                                            {allOptions.length === 0 ? 'Type to add items' : 'All items selected'}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        });
+
+        // Quick View Component
+        const QuickView = memo(({ workflow, workflows, isOpen, onClose, onEdit }) => {
+            const [formData, setFormData] = useState({
+                name: workflow?.name || '',
+                prompt: workflow?.prompt || '',
+                agents: workflow?.agents || ['Internal AI'],
+                input: workflow?.input || [],
+                output: workflow?.output || [],
+                workflowTriggers: workflow?.workflowTriggers || []
+            });
+
+            useEffect(() => {
+                if (workflow) {
+                    setFormData({
+                        name: workflow.name || '',
+                        prompt: workflow.prompt || '',
+                        agents: workflow.agents || ['Internal AI'],
+                        input: workflow.input || [],
+                        output: workflow.output || [],
+                        workflowTriggers: workflow.workflowTriggers || []
+                    });
+                }
+            }, [workflow]);
+
+            const connectedInPointWorkflows = useMemo(() => {
+                if (!workflow) return [];
+                const workflowConnections = [];
+                const nonWorkflowTriggers = workflow.workflowTriggers || [];
+                
+                if (workflow.inputConnections) {
+                    const connectedWorkflowNames = workflow.inputConnections
+                        .map(connectionId => {
+                            const connectedWorkflow = workflows.find(w => w.id === connectionId);
+                            return connectedWorkflow ? connectedWorkflow.name : null;
+                        })
+                        .filter(Boolean);
+                    workflowConnections.push(...connectedWorkflowNames);
+                }
+                
+                return [...workflowConnections, ...nonWorkflowTriggers];
+            }, [workflow, workflows]);
+
+            const connectedOutPointWorkflows = useMemo(() => {
+                if (!workflow?.outputConnections) return [];
+                return workflow.outputConnections
+                    .map(connectionId => {
+                        const connectedWorkflow = workflows.find(w => w.id === connectionId);
+                        return connectedWorkflow ? connectedWorkflow.name : null;
+                    })
+                    .filter(Boolean);
+            }, [workflow?.outputConnections, workflows]);
+
+            if (!workflow) return null;
+
+            return (
+                <div className={`quick-view-pane ${isOpen ? 'open' : ''}`}>
+                    <div className="quick-view-header">
+                        <h2 className="quick-view-title">Quick view</h2>
+                        <button className="quick-view-close" onClick={onClose} aria-label="Close quick view">
+                            ×
+                        </button>
+                    </div>
+                    
+                    <div className="quick-view-content">
+                        <div className="form-group">
+                            <label className="form-label">Name</label>
+                            <input
+                                type="text"
+                                className="form-input compact"
+                                value={formData.name}
+                                readOnly
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">Prompt</label>
+                            <textarea
+                                className="form-textarea compact"
+                                value={formData.prompt}
+                                readOnly
+                            />
+                        </div>
+
+                        <MultiSelect
+                            label="Agent"
+                            value={formData.agents}
+                            onChange={() => {}}
+                            placeholder="Select agent..."
+                            tagType="agents"
+                            workflows={workflows}
+                            compact={true}
+                        />
+
+                        <div style={{ marginTop: 'var(--spacing-xl)' }}>
+                            <h3 style={{ fontSize: '16px', fontWeight: '700', marginBottom: 'var(--spacing-md)', color: 'var(--color-text)' }}>Input</h3>
+                            
+                            <MultiSelect
+                                label="Workflow trigger"
+                                value={connectedInPointWorkflows}
+                                onChange={() => {}}
+                                placeholder="Select workflow that triggers this one..."
+                                tagType="moment"
+                                workflows={workflows.filter(w => w.id !== workflow.id)}
+                                compact={true}
+                            />
+
+                            <MultiSelect
+                                label="Input fields"
+                                value={formData.input}
+                                onChange={() => {}}
+                                placeholder="Select input information..."
+                                tagType="input"
+                                workflows={workflows}
+                                compact={true}
+                            />
+                        </div>
+
+                        <div style={{ marginTop: 'var(--spacing-xl)' }}>
+                            <h3 style={{ fontSize: '16px', fontWeight: '700', marginBottom: 'var(--spacing-md)', color: 'var(--color-text)' }}>Output</h3>
+                            
+                            <MultiSelect
+                                label="Next event"
+                                value={connectedOutPointWorkflows}
+                                onChange={() => {}}
+                                placeholder="Select workflows to trigger next..."
+                                tagType="conclusion"
+                                workflows={workflows.filter(w => w.id !== workflow.id)}
+                                compact={true}
+                            />
+
+                            <MultiSelect
+                                label="Output fields"
+                                value={formData.output}
+                                onChange={() => {}}
+                                placeholder="Select output information..."
+                                tagType="output"
+                                workflows={workflows}
+                                compact={true}
+                            />
+                        </div>
+
+                        <div style={{ marginTop: 'var(--spacing-xl)', paddingTop: 'var(--spacing-lg)', borderTop: '1px solid var(--color-border-light)' }}>
+                            <div style={{ display: 'flex', gap: 'var(--spacing-md)' }}>
+                                <button className="btn btn-general btn-small" onClick={onClose}>
+                                    Close
+                                </button>
+                                <button className="btn btn-primary btn-small" onClick={() => onEdit(workflow)}>
+                                    Edit workflow
+                                </button>
+                            </div>
+                        </div>
+
+                        <div style={{ marginTop: 'var(--spacing-lg)', fontSize: '12px', color: 'var(--color-text-muted)' }}>
+                            <div>Created: {workflow.createdAt}</div>
+                            <div>Updated: {workflow.updatedAt}</div>
+                        </div>
+                    </div>
+                </div>
+            );
+        });
+
+        // Workflow Map View Component
+        const WorkflowMapView = memo(({ workflows, nodePositions, onQuickView, onUpdateNodePosition, onUpdateConnections }) => {
+            const [dragState, setDragState] = useState({
+                isDragging: false,
+                draggedNode: null,
+                dragOffset: { x: 0, y: 0 },
+                isConnecting: false,
+                connectionStart: null,
+                tempConnectionEnd: null
+            });
+
+            const containerRef = useRef(null);
+            const animationFrameRef = useRef(null);
+
+            const nodes = useMemo(() => {
+                return workflows.map(workflow => ({
+                    ...workflow,
+                    x: nodePositions[workflow.id]?.x ?? workflow.x ?? Math.random() * 300 + 50,
+                    y: nodePositions[workflow.id]?.y ?? workflow.y ?? Math.random() * 200 + 50
+                }));
+            }, [workflows, nodePositions]);
+
+            const handleMouseDown = useCallback((e, nodeId) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const node = nodes.find(n => n.id === nodeId);
+                if (!node) return;
+
+                const rect = containerRef.current.getBoundingClientRect();
+                const startX = e.clientX - rect.left;
+                const startY = e.clientY - rect.top;
+                
+                document.body.style.userSelect = 'none';
+                document.body.style.cursor = 'grabbing';
+                
+                setDragState({
+                    isDragging: true,
+                    draggedNode: nodeId,
+                    dragOffset: {
+                        x: startX - node.x,
+                        y: startY - node.y
+                    },
+                    isConnecting: false,
+                    connectionStart: null,
+                    tempConnectionEnd: null
+                });
+            }, [nodes]);
+
+            const handleConnectionStart = useCallback((e, nodeId, type) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (type !== 'out-point') return;
+                
+                const rect = containerRef.current.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                
+                document.body.style.userSelect = 'none';
+                document.body.style.cursor = 'crosshair';
+                
+                setDragState({
+                    isDragging: false,
+                    draggedNode: null,
+                    dragOffset: { x: 0, y: 0 },
+                    isConnecting: true,
+                    connectionStart: nodeId,
+                    tempConnectionEnd: { x: mouseX, y: mouseY }
+                });
+            }, []);
+
+            const handleMouseMove = useCallback((e) => {
+                if (!containerRef.current) return;
+                
+                const rect = containerRef.current.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                if (dragState.isDragging && dragState.draggedNode) {
+                    const newX = Math.max(0, Math.min(mouseX - dragState.dragOffset.x, 2000 - 180));
+                    const newY = Math.max(0, Math.min(mouseY - dragState.dragOffset.y, rect.height - 100));
+
+                    if (animationFrameRef.current) {
+                        cancelAnimationFrame(animationFrameRef.current);
+                    }
+                    
+                    animationFrameRef.current = requestAnimationFrame(() => {
+                        onUpdateNodePosition(dragState.draggedNode, { x: newX, y: newY });
+                    });
+                } else if (dragState.isConnecting) {
+                    setDragState(prev => ({
+                        ...prev,
+                        tempConnectionEnd: { x: mouseX, y: mouseY }
+                    }));
+                }
+            }, [dragState, onUpdateNodePosition]);
+
+            const handleMouseUp = useCallback((e) => {
+                document.body.style.userSelect = '';
+                document.body.style.cursor = '';
+                
+                if (animationFrameRef.current) {
+                    cancelAnimationFrame(animationFrameRef.current);
+                    animationFrameRef.current = null;
+                }
+
+                if (dragState.isConnecting && dragState.connectionStart) {
+                    const rect = containerRef.current.getBoundingClientRect();
+                    const mouseX = e.clientX - rect.left;
+                    const mouseY = e.clientY - rect.top;
+                    
+                    const targetNode = nodes.find(node => {
+                        if (node.id === dragState.connectionStart) return false;
+                        
+                        const inputX = node.x - 8 + 6;
+                        const inputY = node.y + 50;
+                        const distance = Math.sqrt(Math.pow(mouseX - inputX, 2) + Math.pow(mouseY - inputY, 2));
+                        
+                        return distance <= 15;
+                    });
+                    
+                    if (targetNode && onUpdateConnections) {
+                        onUpdateConnections(dragState.connectionStart, targetNode.id);
+                    }
+                }
+                
+                setDragState({
+                    isDragging: false,
+                    draggedNode: null,
+                    dragOffset: { x: 0, y: 0 },
+                    isConnecting: false,
+                    connectionStart: null,
+                    tempConnectionEnd: null
+                });
+            }, [dragState, nodes, onUpdateConnections]);
+
+            useEffect(() => {
+                if (dragState.isDragging || dragState.isConnecting) {
+                    document.addEventListener('mousemove', handleMouseMove, { passive: true });
+                    document.addEventListener('mouseup', handleMouseUp, { passive: true });
+                    
+                    return () => {
+                        document.removeEventListener('mousemove', handleMouseMove);
+                        document.removeEventListener('mouseup', handleMouseUp);
+                    };
+                }
+            }, [dragState.isDragging, dragState.isConnecting, handleMouseMove, handleMouseUp]);
+
+            useEffect(() => {
+                return () => {
+                    if (animationFrameRef.current) {
+                        cancelAnimationFrame(animationFrameRef.current);
+                    }
+                    document.body.style.userSelect = '';
+                    document.body.style.cursor = '';
+                };
+            }, []);
+
+            const getConnectionPoints = useCallback((fromNode, toNode) => {
+                const fromX = fromNode.x + 180 - 2;
+                const fromY = fromNode.y + 50;
+                const toX = toNode.x + 2;
+                const toY = toNode.y + 50;
+                return { fromX, fromY, toX, toY };
+            }, []);
+
+            const getConnectedWorkflowMoment = useCallback((node) => {
+                const triggers = [];
+                
+                if (node.inputConnections?.length > 0) {
+                    const connectedWorkflows = node.inputConnections
+                        .map(connectionId => {
+                            const connectedNode = nodes.find(n => n.id === connectionId);
+                            return connectedNode?.name;
+                        })
+                        .filter(Boolean);
+                    triggers.push(...connectedWorkflows);
+                }
+                
+                if (node.workflowTriggers?.length > 0) {
+                    triggers.push(...node.workflowTriggers);
+                }
+                
+                return triggers.length > 0 ? triggers.join(', ') : 'No workflow trigger defined';
+            }, [nodes]);
+
+            const renderConnections = useMemo(() => {
+                const connections = nodes.flatMap(fromNode => 
+                    (fromNode.outputConnections || []).map(toNodeId => {
+                        const toNode = nodes.find(n => n.id === toNodeId);
+                        if (!toNode) return null;
+                        
+                        const { fromX, fromY, toX, toY } = getConnectionPoints(fromNode, toNode);
+                        
+                        return (
+                            <line
+                                key={`${fromNode.id}-${toNode.id}`}
+                                x1={fromX} y1={fromY} x2={toX} y2={toY}
+                                stroke="#000000" strokeWidth="2"
+                            />
+                        );
+                    }).filter(Boolean)
+                );
+                
+                if (dragState.isConnecting && dragState.connectionStart && dragState.tempConnectionEnd) {
+                    const startNode = nodes.find(n => n.id === dragState.connectionStart);
+                    if (startNode) {
+                        const startX = startNode.x + 180 - 2;
+                        const startY = startNode.y + 50;
+                        
+                        connections.push(
+                            <line
+                                key="temp-connection"
+                                x1={startX}
+                                y1={startY}
+                                x2={dragState.tempConnectionEnd.x}
+                                y2={dragState.tempConnectionEnd.y}
+                                stroke="#666666"
+                                strokeWidth="2"
+                                strokeDasharray="5,5"
+                                opacity="0.7"
+                            />
+                        );
+                    }
+                }
+                
+                return connections;
+            }, [nodes, getConnectionPoints, dragState]);
+
+            if (workflows.length === 0) {
+                return (
+                    <div className="empty-state">
+                        <div className="empty-state-icon">📋</div>
+                        <h3>No workflows found</h3>
+                        <p>Create your first workflow to get started</p>
+                    </div>
+                );
+            }
+
+            return (
+                <div 
+                    ref={containerRef}
+                    className={`map-container ${dragState.isDragging || dragState.isConnecting ? 'dragging' : ''}`}
+                    role="application"
+                    aria-label="Workflow map view"
+                >
+                    <svg 
+                        style={{
+                            position: 'absolute',
+                            top: 0, left: 0,
+                            width: '100%', height: '100%',
+                            pointerEvents: 'none',
+                            zIndex: 1
+                        }}
+                    >
+                        {renderConnections}
+                    </svg>
+
+                    {nodes.map(node => {
+                        const isDragging = dragState.draggedNode === node.id;
+                        const hasInPointConnection = node.inputConnections?.length > 0;
+                        const hasOutPointConnection = node.outputConnections?.length > 0;
+                        const momentText = getConnectedWorkflowMoment(node);
+                        const isConnectionTarget = dragState.isConnecting && dragState.connectionStart !== node.id;
+                        
+                        return (
+                            <div
+                                key={node.id}
+                                className={`workflow-node ${isDragging ? 'dragging' : ''} ${isConnectionTarget ? 'connection-target' : ''}`}
+                                style={{
+                                    left: node.x,
+                                    top: node.y,
+                                    zIndex: isDragging ? 1000 : 10
+                                }}
+                                onMouseDown={(e) => handleMouseDown(e, node.id)}
+                                role="button"
+                                tabIndex={0}
+                                aria-label={`Workflow: ${node.name}`}
+                            >
+                                <div 
+                                    className={`connection-point in-point ${hasInPointConnection ? 'connected' : 'unconnected'} ${isConnectionTarget ? 'highlight' : ''}`}
+                                ></div>
+                                <div 
+                                    className={`connection-point out-point ${hasOutPointConnection ? 'connected' : 'unconnected'}`}
+                                    onMouseDown={(e) => handleConnectionStart(e, node.id, 'out-point')}
+                                    style={{ cursor: 'crosshair' }}
+                                ></div>
+                                
+                                <div className="workflow-node-header">
+                                    <h4>{node.name}</h4>
+                                </div>
+                                
+                                <div className="workflow-moment">
+                                    <span className="workflow-moment-label">Workflow trigger:</span>
+                                    <br />
+                                    <span className="workflow-moment-value">{momentText}</span>
+                                </div>
+                                
+                                <div className="node-actions">
+                                    <button 
+                                        className="view-details-btn"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onQuickView(node);
+                                        }}
+                                    >
+                                        Quick view
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            );
+        });
+
+        // Workflow List View Component
+        const WorkflowListView = memo(({ workflows, onQuickView, onDeleteWorkflow }) => {
+            const [searchTerm, setSearchTerm] = useState('');
+            const [sortBy, setSortBy] = useState('name');
+
+            const filteredWorkflows = useMemo(() => {
+                let filtered = workflows.filter(workflow =>
+                    workflow.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (workflow.prompt && workflow.prompt.toLowerCase().includes(searchTerm.toLowerCase()))
+                );
+
+                const sortFunctions = {
+                    name: (a, b) => a.name.localeCompare(b.name),
+                    created: (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+                    updated: (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+                };
+
+                filtered.sort(sortFunctions[sortBy] || sortFunctions.name);
+                return filtered;
+            }, [workflows, searchTerm, sortBy]);
+
+            if (workflows.length === 0) {
+                return (
+                    <div className="empty-state">
+                        <div className="empty-state-icon">📋</div>
+                        <h3>No workflows found</h3>
+                        <p>Create your first workflow to get started</p>
+                    </div>
+                );
+            }
+
+            return (
+                <div>
+                    <div className="search-filter-bar">
+                        <input
+                            type="text"
+                            placeholder="Search workflows..."
+                            className="search-input"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            aria-label="Search workflows"
+                        />
+                        <select 
+                            className="btn btn-general"
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            aria-label="Sort workflows"
+                        >
+                            <option value="name">Sort by name</option>
+                            <option value="created">Sort by created</option>
+                            <option value="updated">Sort by updated</option>
+                        </select>
+                    </div>
+
+                    <div className="list-container">
+                        <div className="list-content">
+                            {filteredWorkflows.length === 0 ? (
+                                <div className="empty-state">
+                                    <div className="empty-state-icon">🔍</div>
+                                    <h3>No workflows match your search</h3>
+                                    <p>Try adjusting your search terms</p>
+                                </div>
+                            ) : (
+                                filteredWorkflows.map(workflow => (
+                                    <article key={workflow.id} className="workflow-card">
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+                                            <div style={{ flex: 1 }}>
+                                                <h3>
+                                                    <button
+                                                        onClick={() => onQuickView(workflow)}
+                                                        className="workflow-card-link"
+                                                    >
+                                                        {workflow.name}
+                                                    </button>
+                                                </h3>
+                                                {workflow.prompt && (
+                                                    <p style={{ 
+                                                        fontSize: '14px', 
+                                                        color: 'var(--color-text-muted)', 
+                                                        marginBottom: 'var(--spacing-sm)',
+                                                        overflow: 'hidden',
+                                                        display: '-webkit-box',
+                                                        WebkitLineClamp: 2,
+                                                        WebkitBoxOrient: 'vertical'
+                                                    }}>
+                                                        {workflow.prompt}
+                                                    </p>
+                                                )}
+                                                <div className="workflow-connections">
+                                                    {workflow.inputConnections?.length > 0 && (
+                                                        <div style={{ marginBottom: 'var(--spacing-xs)' }}>
+                                                            <strong>← Connected from:</strong> {workflow.inputConnections.map(id => {
+                                                                const sourceWorkflow = workflows.find(w => w.id === id);
+                                                                return sourceWorkflow ? sourceWorkflow.name : id;
+                                                            }).join(', ')}
+                                                        </div>
+                                                    )}
+                                                    {workflow.outputConnections?.length > 0 && (
+                                                        <div style={{ marginBottom: 'var(--spacing-xs)' }}>
+                                                            <strong>→ Connected to:</strong> {workflow.outputConnections.map(id => {
+                                                                const targetWorkflow = workflows.find(w => w.id === id);
+                                                                return targetWorkflow ? targetWorkflow.name : id;
+                                                            }).join(', ')}
+                                                        </div>
+                                                    )}
+                                                    {workflow.output?.length > 0 && (
+                                                        <div>
+                                                            <strong>Output fields:</strong> {workflow.output.join(', ')}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="workflow-card-actions">
+                                            <button 
+                                                className="btn btn-general btn-small"
+                                                onClick={() => onQuickView(workflow)}
+                                            >
+                                                Quick view
+                                            </button>
+                                            <button 
+                                                className="btn btn-danger btn-small"
+                                                onClick={() => onDeleteWorkflow(workflow.id)}
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </article>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        });
+
+        // Main App Component
+        function App() {
+            const [viewMode, setViewMode] = useState(VIEW_MODES.MAP);
+            const [workflows, setWorkflows] = useState(sampleWorkflows);
+            const [quickViewWorkflow, setQuickViewWorkflow] = useState(null);
+            const [notification, setNotification] = useState(null);
+            
+            const [nodePositions, setNodePositions] = useState(() => {
+                const positions = {};
+                sampleWorkflows.forEach(workflow => {
+                    positions[workflow.id] = { x: workflow.x, y: workflow.y };
+                });
+                return positions;
+            });
+
+            const showNotification = useCallback((message, type = 'success') => {
+                setNotification({ message, type });
+            }, []);
+
+            const hideNotification = useCallback(() => {
+                setNotification(null);
+            }, []);
+
+            const handleQuickView = useCallback((workflow) => {
+                setQuickViewWorkflow(workflow);
+            }, []);
+
+            const handleCloseQuickView = useCallback(() => {
+                setQuickViewWorkflow(null);
+            }, []);
+
+            const handleEditWorkflow = useCallback((workflow) => {
+                // In a real app, this would navigate to the edit view
+                showNotification(`Edit functionality would open for "${workflow.name}"`);
+                handleCloseQuickView();
+            }, [showNotification, handleCloseQuickView]);
+
+            const handleDeleteWorkflow = useCallback((workflowId) => {
+                const workflowToDelete = workflows.find(w => w.id === workflowId);
+                if (!workflowToDelete) return;
+                
+                setWorkflows(prevWorkflows => {
+                    const filteredWorkflows = prevWorkflows.filter(w => w.id !== workflowId);
+                    
+                    const cleanedWorkflows = filteredWorkflows.map(workflow => {
+                        const updatedWorkflow = { ...workflow };
+                        
+                        if (updatedWorkflow.inputConnections) {
+                            updatedWorkflow.inputConnections = updatedWorkflow.inputConnections.filter(id => id !== workflowId);
+                        }
+                        
+                        if (updatedWorkflow.outputConnections) {
+                            updatedWorkflow.outputConnections = updatedWorkflow.outputConnections.filter(id => id !== workflowId);
+                        }
+                        
+                        return updatedWorkflow;
+                    });
+                    
+                    return cleanedWorkflows;
+                });
+                
+                setNodePositions(prevPositions => {
+                    const newPositions = { ...prevPositions };
+                    delete newPositions[workflowId];
+                    return newPositions;
+                });
+                
+                if (quickViewWorkflow?.id === workflowId) {
+                    setQuickViewWorkflow(null);
+                }
+                
+                showNotification(`Workflow "${workflowToDelete.name}" deleted successfully`);
+            }, [workflows, quickViewWorkflow, showNotification]);
+
+            const handleUpdateNodePosition = useCallback((nodeId, position) => {
+                setNodePositions(prev => ({
+                    ...prev,
+                    [nodeId]: position
+                }));
+            }, []);
+
+            const handleUpdateConnections = useCallback((fromNodeId, toNodeId, remove = false) => {
+                setWorkflows(prev => prev.map(workflow => {
+                    if (workflow.id === fromNodeId) {
+                        const outputConnections = workflow.outputConnections || [];
+                        if (remove) {
+                            return {
+                                ...workflow,
+                                outputConnections: outputConnections.filter(id => id !== toNodeId)
+                            };
+                        } else if (!outputConnections.includes(toNodeId)) {
+                            return {
+                                ...workflow,
+                                outputConnections: [...outputConnections, toNodeId]
+                            };
+                        }
+                    }
+                    if (workflow.id === toNodeId) {
+                        const inputConnections = workflow.inputConnections || [];
+                        if (remove) {
+                            return {
+                                ...workflow,
+                                inputConnections: inputConnections.filter(id => id !== fromNodeId)
+                            };
+                        } else if (!inputConnections.includes(fromNodeId)) {
+                            return {
+                                ...workflow,
+                                inputConnections: [...inputConnections, fromNodeId]
+                            };
+                        }
+                    }
+                    return workflow;
+                }));
+                
+                if (!remove) {
+                    const fromWorkflow = workflows.find(w => w.id === fromNodeId);
+                    const toWorkflow = workflows.find(w => w.id === toNodeId);
+                    showNotification(`Connected "${fromWorkflow?.name}" to "${toWorkflow?.name}"`);
+                }
+            }, [workflows, showNotification]);
+
+            return (
+                <>
+                    <div className="workbar">
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <h1>Workflows</h1>
+                        </div>
+                        <div className="workbar-actions">
+                            <div className="view-toggle">
+                                <button 
+                                    className={`btn ${viewMode === VIEW_MODES.MAP ? 'active' : ''}`}
+                                    onClick={() => setViewMode(VIEW_MODES.MAP)}
+                                    aria-pressed={viewMode === VIEW_MODES.MAP}
+                                >
+                                    Map view
+                                </button>
+                                <button 
+                                    className={`btn ${viewMode === VIEW_MODES.LIST ? 'active' : ''}`}
+                                    onClick={() => setViewMode(VIEW_MODES.LIST)}
+                                    aria-pressed={viewMode === VIEW_MODES.LIST}
+                                >
+                                    List view
+                                </button>
+                            </div>
+                            <button 
+                                className="btn btn-primary"
+                                onClick={() => showNotification('Create workflow functionality would open here')}
+                            >
+                                Create workflow
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="content-area">
+                        <QuickView
+                            workflow={quickViewWorkflow}
+                            workflows={workflows}
+                            isOpen={!!quickViewWorkflow}
+                            onClose={handleCloseQuickView}
+                            onEdit={handleEditWorkflow}
+                        />
+                        
+                        <div className={`main-view ${quickViewWorkflow ? 'with-quick-view' : ''}`}>
+                            {viewMode === VIEW_MODES.MAP ? (
+                                <WorkflowMapView
+                                    workflows={workflows}
+                                    nodePositions={nodePositions}
+                                    onQuickView={handleQuickView}
+                                    onUpdateNodePosition={handleUpdateNodePosition}
+                                    onUpdateConnections={handleUpdateConnections}
+                                />
+                            ) : (
+                                <WorkflowListView
+                                    workflows={workflows}
+                                    onQuickView={handleQuickView}
+                                    onDeleteWorkflow={handleDeleteWorkflow}
+                                />
+                            )}
+                        </div>
+                    </div>
+
+                    {notification && (
+                        <Notification
+                            message={notification.message}
+                            type={notification.type}
+                            onClose={hideNotification}
+                        />
+                    )}
+                </>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('app-root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
