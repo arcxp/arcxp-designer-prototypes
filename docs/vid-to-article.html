@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMS Video-to-Article Workflow</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .flex-1 { flex: 1; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .space-x-4 > * + * { margin-left: 1rem; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        
+        .bg-white { background-color: white; }
+        .bg-black { background-color: black; }
+        .bg-gray-50 { background-color: #f9fafb; }
+        .bg-gray-100 { background-color: #f3f4f6; }
+        .bg-gray-200 { background-color: #e5e7eb; }
+        
+        .text-white { color: white; }
+        .text-black { color: black; }
+        .text-gray-400 { color: #9ca3af; }
+        .text-gray-600 { color: #4b5563; }
+        .text-gray-700 { color: #374151; }
+        
+        .border { border: 1px solid #d1d5db; }
+        .border-b { border-bottom: 1px solid #e5e7eb; }
+        .border-r { border-right: 1px solid #e5e7eb; }
+        .rounded { border-radius: 0.25rem; }
+        .rounded-lg { border-radius: 0.5rem; }
+        
+        .p-4 { padding: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        
+        .w-64 { width: 16rem; }
+        .w-80 { width: 20rem; }
+        .w-full { width: 100%; }
+        .h-screen { height: 100vh; }
+        .h-4/5 { height: 80%; }
+        .max-w-4xl { max-width: 56rem; }
+        
+        .text-sm { font-size: 0.875rem; }
+        .text-lg { font-size: 1.125rem; }
+        .text-xl { font-size: 1.25rem; }
+        .text-3xl { font-size: 1.875rem; }
+        .font-medium { font-weight: 500; }
+        .font-semibold { font-weight: 600; }
+        .font-bold { font-weight: 700; }
+        
+        .cursor-pointer { cursor: pointer; }
+        .hover\:underline:hover { text-decoration: underline; }
+        .hover\:bg-gray-100:hover { background-color: #f3f4f6; }
+        
+        .overflow-y-auto { overflow-y: auto; }
+        .fixed { position: fixed; }
+        .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+        .z-50 { z-index: 50; }
+        
+        .modal-overlay { background-color: rgba(0, 0, 0, 0.5); }
+        
+        button { cursor: pointer; border: none; background: none; }
+        .btn-primary { 
+            background-color: black; 
+            color: white; 
+            padding: 0.5rem 1rem; 
+            border-radius: 0.25rem; 
+            font-weight: 500;
+        }
+        .btn-primary:hover { background-color: #374151; }
+        
+        select, input { 
+            border: 1px solid #d1d5db; 
+            border-radius: 0.25rem; 
+            padding: 0.5rem; 
+            font-size: 0.875rem;
+        }
+        
+        .video-item {
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .video-item:hover {
+            border-color: black;
+            background-color: #f9fafb;
+        }
+        
+        .video-thumbnail {
+            width: 120px;
+            height: 68px;
+            background-color: #f3f4f6;
+            border: 1px solid #d1d5db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.25rem;
+            font-size: 24px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .animate-spin { animation: spin 1s linear infinite; }
+        
+        .highlight { background-color: #f3f4f6; border: 1px solid #d1d5db; }
+    </style>
+</head>
+<body>
+    <!-- Dashboard View -->
+    <div id="dashboard-view" class="h-screen bg-white flex flex-col">
+        <!-- Header -->
+        <div class="bg-black text-white px-6 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-4">
+                    <div style="width: 24px; height: 24px; border: 2px solid white; border-radius: 4px;"></div>
+                    <span class="text-lg font-medium">Composer</span>
+                </div>
+                <nav class="flex space-x-4 text-sm">
+                    <span style="color: white; border-bottom: 2px solid white; padding-bottom: 4px;">Stories</span>
+                    <span class="text-gray-400 cursor-pointer hover:text-white">Settings</span>
+                    <span class="text-gray-400 cursor-pointer hover:text-white">Templates</span>
+                </nav>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span style="background: white; color: black; border: 1px solid black; padding: 4px 12px; border-radius: 4px; font-size: 12px;">Production</span>
+                <span class="text-sm">Aaron Schmidt</span>
+            </div>
+        </div>
+
+        <div class="flex flex-1">
+            <!-- Sidebar -->
+            <div class="w-64 bg-gray-50 border-r p-4">
+                <div class="mb-6">
+                    <label class="block text-sm font-medium mb-2">Sort by</label>
+                    <select class="w-full">
+                        <option>Created date</option>
+                        <option>Last modified</option>
+                    </select>
+                </div>
+                <div class="mb-6">
+                    <h3 class="font-medium mb-2">Filters</h3>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">Websites</label>
+                        <select class="w-full">
+                            <option>food</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="flex-1 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center space-x-4">
+                        <input type="text" placeholder="Enter search terms" style="width: 384px; padding-left: 40px;" class="border rounded" />
+                    </div>
+                    <button id="create-story-btn" class="btn-primary">Create story</button>
+                </div>
+
+                <!-- Stories List -->
+                <div class="bg-white border rounded">
+                    <div class="p-4 border-b">
+                        <h3 class="text-black font-medium mb-1 hover:underline cursor-pointer">Draft Revision Headline</h3>
+                        <div class="flex items-center space-x-4 text-sm text-gray-600">
+                            <div><span class="font-medium">Last modified</span><div>2/19/2021, 4:45 AM</div></div>
+                            <div><span class="font-medium">Not published</span></div>
+                            <div><span class="font-medium">Authors</span><div>None</div></div>
+                        </div>
+                    </div>
+                    <div class="p-4 border-b">
+                        <h3 class="text-black font-medium mb-1 hover:underline cursor-pointer">Draft Revision Headline</h3>
+                        <div class="flex items-center space-x-4 text-sm text-gray-600">
+                            <div><span class="font-medium">Last modified</span><div>2/19/2021, 4:43 AM</div></div>
+                            <div><span class="font-medium">Not published</span></div>
+                            <div><span class="font-medium">Authors</span><div>None</div></div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-black font-medium mb-1 hover:underline cursor-pointer">Draft Revision Headline</h3>
+                        <div class="flex items-center space-x-4 text-sm text-gray-600">
+                            <div><span class="font-medium">Last modified</span><div>2/19/2021, 4:36 AM</div></div>
+                            <div><span class="font-medium">Not published</span></div>
+                            <div><span class="font-medium">Authors</span><div>None</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Templates Modal -->
+    <div id="templates-modal" class="hidden fixed inset-0 modal-overlay flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg flex" style="width: 80%; height: 80%;">
+            <!-- Sidebar -->
+            <div class="w-64 bg-gray-50 p-6 border-r">
+                <h2 class="text-xl font-semibold mb-6">Story templates</h2>
+                <nav class="space-y-2">
+                    <div class="text-black font-medium py-2 px-3 bg-gray-100 rounded border">All templates</div>
+                    <div class="py-2 px-3 hover:bg-gray-100 rounded cursor-pointer">Starred</div>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <div class="flex-1 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <input type="text" placeholder="Search for templates" class="border rounded px-4 py-2" style="width: 320px;" />
+                    <button id="close-modal-btn" class="text-gray-600 hover:text-gray-800" style="font-size: 18px;">✕</button>
+                </div>
+
+                <!-- Template Items -->
+                <div class="space-y-4">
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 12px 0; border-bottom: 1px solid #f3f4f6;">
+                        <div class="flex items-center">
+                            <span style="margin-right: 8px;">☆</span>
+                            <span class="font-medium">News</span>
+                        </div>
+                        <div class="text-gray-600">standard news template</div>
+                        <div class="text-gray-600">benchmarking</div>
+                        <div>
+                            <button class="btn-primary template-btn" data-template="News">Create story</button>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 12px 0; border-bottom: 1px solid #f3f4f6;">
+                        <div class="flex items-center">
+                            <span style="margin-right: 8px;">☆</span>
+                            <span class="font-medium">Opinion</span>
+                        </div>
+                        <div class="text-gray-600">Opinion articles</div>
+                        <div class="text-gray-600">benchmarking</div>
+                        <div>
+                            <button class="btn-primary template-btn" data-template="Opinion">Create story</button>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 12px 0;">
+                        <div class="flex items-center">
+                            <span style="margin-right: 8px;">☆</span>
+                            <span class="font-medium">Video Story</span>
+                        </div>
+                        <div class="text-gray-600">Create article from video transcript</div>
+                        <div class="text-gray-600">benchmarking</div>
+                        <div>
+                            <button class="btn-primary template-btn" data-template="Video Story">Create story</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Selection Modal -->
+    <div id="video-selection-view" class="hidden fixed inset-0 modal-overlay flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg max-w-4xl w-full h-4/5 flex flex-col">
+            <!-- Normal video selection content -->
+            <div id="video-selection-content">
+                <div class="p-6 border-b flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-semibold">Select a video</h2>
+                        <p class="text-sm text-gray-600" style="margin-top: 4px;">Choose a video to generate an article from its transcript</p>
+                    </div>
+                    <button id="close-video-selection-btn" class="text-gray-600 hover:text-gray-800" style="font-size: 18px;">✕</button>
+                </div>
+
+                <div class="p-6 border-b">
+                    <input type="text" placeholder="Search videos..." class="border rounded px-4 py-2" style="width: 320px;" id="video-search-input" />
+                </div>
+
+                <div class="flex-1 overflow-y-auto p-6">
+                    <h3 class="text-sm font-medium text-gray-700 mb-4">Recent videos</h3>
+                    <div class="space-y-4" id="video-list">
+                        <!-- Videos populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading state within modal -->
+            <div id="video-loading-content" class="hidden">
+                <div class="p-6 border-b flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-semibold">Generating draft</h2>
+                        <p class="text-sm text-gray-600" style="margin-top: 4px;">Processing your selected video</p>
+                    </div>
+                    <button id="close-video-loading-btn" class="text-gray-600 hover:text-gray-800" style="font-size: 18px;">✕</button>
+                </div>
+
+                <div class="flex-1 flex items-center justify-center" style="min-height: 400px;">
+                    <div class="text-center">
+                        <div style="width: 64px; height: 64px; border: 4px solid #e5e7eb; border-top: 4px solid black; border-radius: 50%; margin: 0 auto 24px;" class="animate-spin"></div>
+                        <h3 class="text-lg font-semibold mb-2">Creating article from video</h3>
+                        <p class="text-gray-600 mb-4">This will take just a moment...</p>
+                        <div class="text-sm text-gray-600">
+                            <div id="modal-loading-progress">Analyzing video content...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading View -->
+    <div id="loading-view" class="hidden h-screen bg-white flex flex-col items-center justify-center">
+        <div class="text-center">
+            <div style="width: 64px; height: 64px; border: 4px solid #e5e7eb; border-top: 4px solid black; border-radius: 50%; margin: 0 auto 16px;" class="animate-spin"></div>
+            <h2 class="text-xl font-semibold mb-2">Generating draft</h2>
+            <p class="text-gray-600">Processing video content and creating article draft...</p>
+            <div style="margin-top: 16px;" class="text-sm text-gray-600">
+                <div id="loading-progress">Analyzing video content...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Story Editor View -->
+    <div id="editor-view" class="hidden h-screen bg-white flex flex-col">
+        <!-- Header -->
+        <div class="bg-black text-white px-6 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <span class="text-lg font-medium">Composer - Editor</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span style="background: white; color: black; border: 1px solid black; padding: 4px 12px; border-radius: 4px; font-size: 12px;">Production</span>
+            </div>
+        </div>
+
+        <!-- Sub Header -->
+        <div class="border-b px-6 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <button id="back-to-dashboard-btn" class="hover:bg-gray-100 p-1 rounded" style="font-size: 18px;">‹</button>
+                <div>
+                    <h1 class="font-semibold">Sports Headlines Article</h1>
+                    <p class="text-sm text-gray-600">Generated from video transcript</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <select class="border rounded px-3 py-1 text-sm">
+                    <option>Draft</option>
+                    <option>Published</option>
+                </select>
+                <button class="btn-primary">Save</button>
+            </div>
+        </div>
+
+        <div class="flex flex-1">
+            <!-- Main Editor -->
+            <div class="flex-1 flex flex-col">
+                <div class="flex-1 p-6 overflow-y-auto">
+                    <div class="max-w-4xl">
+                        <h1 class="text-3xl font-bold mb-2">Today's Sports Headlines</h1>
+                        <h2 class="text-xl text-gray-600 mb-6">Highlights, Scores, and Surprises from the Field: What You Missed This Weekend</h2>
+                        
+                        <div class="space-y-4 text-gray-700" style="line-height: 1.6;">
+                            <div>
+                                <h3 class="font-semibold mb-2">NFL Action:</h3>
+                                <p id="nfl-text">The NFL delivered another thrilling weekend! The Kansas City Chiefs edged out the Buffalo Bills in a nail-biter, winning 27-24 with a last-minute field goal. Patrick Mahomes threw for over <span class="highlight" id="highlight-1">three hundred</span> yards and two touchdowns, solidifying his <span class="highlight" id="highlight-2">MVP</span> candidacy. Meanwhile, the Miami Dolphins continued their strong start with a decisive 35-14 victory against the New England Patriots.</p>
+                            </div>
+                            
+                            <div>
+                                <h3 class="font-semibold mb-2">MLB Playoff Race:</h3>
+                                <p id="mlb-text">As the regular season winds down, <span class="highlight" id="highlight-3">um, </span>the MLB playoff picture is becoming clearer. The Atlanta Braves clinched the NL East with a dominant 9-1 win over the Philadelphia Phillies.</p>
+                            </div>
+
+                            <div>
+                                <h3 class="font-semibold mb-2">NHL Preseason:</h3>
+                                <p id="nhl-text">The NHL preseason kicked off, with teams gearing up for the upcoming season. <span class="highlight" id="highlight-4">[crowd cheering in background] </span>The Colorado Avalanche looked sharp in their first game, defeating the Vegas Golden Knights 4-2.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Panel -->
+            <div id="ai-panel" class="hidden w-80 border-l bg-gray-50 flex flex-col">
+                <div class="p-4 border-b flex items-center justify-between">
+                    <h3 class="font-semibold">Style guide review</h3>
+                    <div class="flex items-center space-x-4">
+                        <span style="background: #e5e7eb; color: black; padding: 2px 8px; border-radius: 4px; font-size: 12px;">4</span>
+                        <button id="close-ai-panel-btn" style="font-size: 16px;">✕</button>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-gray-100 border-b">
+                    <div class="text-sm text-gray-700">
+                        <p class="mb-2">🔹 This article was generated from a video transcript.</p>
+                        <p style="font-size: 12px;" class="text-gray-600">Review the suggestions below to align your content with newsroom style guidelines.</p>
+                    </div>
+                </div>
+
+                <div class="p-4 border-b">
+                    <div class="flex space-x-4 text-sm">
+                        <button class="text-black hover:underline" id="reject-all-btn">Reject all</button>
+                        <span>|</span>
+                        <button class="text-black hover:underline" id="accept-all-btn">Accept all</button>
+                    </div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto" id="suggestions-container">
+                    <!-- Suggestions populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let currentView = 'dashboard';
+        let suggestionStates = {};
+        
+        // Mock video data
+        const mockVideos = [
+            {
+                id: 1,
+                title: "NFL Week 5 Highlights: Best Plays and Moments",
+                duration: "8:42",
+                date: "Oct 15, 2023",
+                channel: "Sports Central",
+                thumbnail: "📺"
+            },
+            {
+                id: 2,
+                title: "MLB Playoff Race: Wild Card Predictions", 
+                duration: "12:15",
+                date: "Oct 14, 2023",
+                channel: "Baseball Tonight",
+                thumbnail: "⚾"
+            },
+            {
+                id: 3,
+                title: "NHL Preseason Preview: Team Analysis",
+                duration: "15:30", 
+                date: "Oct 13, 2023",
+                channel: "Hockey Hub",
+                thumbnail: "🏒"
+            },
+            {
+                id: 4,
+                title: "Premier League Round-up: Manchester Derby",
+                duration: "18:22",
+                date: "Oct 12, 2023", 
+                channel: "Football Focus",
+                thumbnail: "⚽"
+            }
+        ];
+        
+        // Mock suggestions data
+        const aiSuggestions = [
+            {
+                id: 1,
+                rule: "Numbers 10 and above written as numerals",
+                original: "three hundred",
+                suggested: "300",
+                highlightId: "highlight-1",
+                textId: "nfl-text"
+            },
+            {
+                id: 2,
+                rule: 'Use "Most Valuable Player" instead of MVP',
+                original: "MVP",
+                suggested: "Most Valuable Player", 
+                highlightId: "highlight-2",
+                textId: "nfl-text"
+            },
+            {
+                id: 3,
+                rule: "Remove filler words",
+                original: "um, ",
+                suggested: "[removed]",
+                highlightId: "highlight-3",
+                textId: "mlb-text"
+            },
+            {
+                id: 4,
+                rule: "Remove sound references",
+                original: "[crowd cheering in background] ",
+                suggested: "[removed]",
+                highlightId: "highlight-4", 
+                textId: "nhl-text"
+            }
+        ];
+        
+        // DOM elements
+        const elements = {
+            dashboardView: document.getElementById('dashboard-view'),
+            templatesModal: document.getElementById('templates-modal'),
+            videoSelectionView: document.getElementById('video-selection-view'),
+            videoSelectionContent: document.getElementById('video-selection-content'),
+            videoLoadingContent: document.getElementById('video-loading-content'),
+            editorView: document.getElementById('editor-view'),
+            createStoryBtn: document.getElementById('create-story-btn'),
+            closeModalBtn: document.getElementById('close-modal-btn'),
+            closeVideoSelectionBtn: document.getElementById('close-video-selection-btn'),
+            backToDashboardBtn: document.getElementById('back-to-dashboard-btn'),
+            closeAiPanelBtn: document.getElementById('close-ai-panel-btn'),
+            suggestionsContainer: document.getElementById('suggestions-container'),
+            acceptAllBtn: document.getElementById('accept-all-btn'),
+            rejectAllBtn: document.getElementById('reject-all-btn'),
+            aiPanel: document.getElementById('ai-panel'),
+            videoList: document.getElementById('video-list'),
+            videoSearchInput: document.getElementById('video-search-input'),
+            modalLoadingProgress: document.getElementById('modal-loading-progress')
+        };
+        
+        // View management
+        function showView(viewName) {
+            // Hide all views
+            elements.dashboardView.classList.add('hidden');
+            elements.editorView.classList.add('hidden');
+            elements.templatesModal.classList.add('hidden');
+            elements.videoSelectionView.classList.add('hidden');
+            
+            // Show target view
+            switch (viewName) {
+                case 'dashboard':
+                    elements.dashboardView.classList.remove('hidden');
+                    break;
+                case 'editor':
+                    elements.editorView.classList.remove('hidden');
+                    renderSuggestions();
+                    break;
+                case 'templates':
+                    elements.templatesModal.classList.remove('hidden');
+                    break;
+                case 'video-selection':
+                    elements.videoSelectionView.classList.remove('hidden');
+                    // Show video selection content, hide loading content
+                    elements.videoSelectionContent.classList.remove('hidden');
+                    elements.videoLoadingContent.classList.add('hidden');
+                    populateVideoList();
+                    break;
+            }
+            
+            currentView = viewName;
+        }
+        
+        // Show loading state within video modal
+        function showVideoLoading() {
+            elements.videoSelectionContent.classList.add('hidden');
+            elements.videoLoadingContent.classList.remove('hidden');
+            showLoadingSequence();
+        }
+        
+        // Video list population
+        function populateVideoList() {
+            if (!elements.videoList) return;
+            
+            elements.videoList.innerHTML = '';
+            
+            mockVideos.forEach(video => {
+                const videoDiv = document.createElement('div');
+                videoDiv.className = 'video-item';
+                videoDiv.onclick = () => selectVideo(video.id);
+                
+                videoDiv.innerHTML = `
+                    <div class="flex items-center space-x-4">
+                        <div class="video-thumbnail">${video.thumbnail}</div>
+                        <div class="flex-1">
+                            <h4 class="font-medium text-black mb-1">${video.title}</h4>
+                            <div class="flex items-center space-x-4 text-sm text-gray-600">
+                                <span>${video.duration}</span>
+                                <span>•</span>
+                                <span>${video.date}</span>
+                                <span>•</span>
+                                <span>${video.channel}</span>
+                            </div>
+                        </div>
+                        <div class="text-gray-400" style="font-size: 16px;">▶</div>
+                    </div>
+                `;
+                
+                elements.videoList.appendChild(videoDiv);
+            });
+        }
+        
+        // Video selection
+        function selectVideo(videoId) {
+            showVideoLoading();
+        }
+        
+        // Loading sequence (now within modal)
+        function showLoadingSequence() {
+            const steps = [
+                "Analyzing video content...",
+                "Extracting transcript...", 
+                "Generating article structure...",
+                "Applying style guidelines...",
+                "Finalizing draft..."
+            ];
+            
+            let currentStep = 0;
+            
+            function updateProgress() {
+                if (elements.modalLoadingProgress && currentStep < steps.length) {
+                    elements.modalLoadingProgress.textContent = steps[currentStep];
+                    currentStep++;
+                    
+                    if (currentStep < steps.length) {
+                        setTimeout(updateProgress, 600);
+                    } else {
+                        setTimeout(() => {
+                            showView('editor');
+                            elements.aiPanel.classList.remove('hidden');
+                        }, 800);
+                    }
+                }
+            }
+            
+            updateProgress();
+        }
+        
+        // Suggestion handling
+        function handleSuggestion(suggestionId, action) {
+            const suggestion = aiSuggestions.find(s => s.id === suggestionId);
+            if (!suggestion) return;
+            
+            const textElement = document.getElementById(suggestion.textId);
+            if (!textElement) return;
+            
+            let currentText = textElement.innerHTML;
+            
+            if (action === 'accept') {
+                suggestionStates[suggestionId] = 'accepted';
+                if (suggestion.suggested === '[removed]') {
+                    currentText = currentText.replace(
+                        `<span class="highlight" id="${suggestion.highlightId}">${suggestion.original}</span>`,
+                        ''
+                    );
+                } else {
+                    currentText = currentText.replace(
+                        `<span class="highlight" id="${suggestion.highlightId}">${suggestion.original}</span>`,
+                        suggestion.suggested
+                    );
+                }
+            } else if (action === 'reject') {
+                suggestionStates[suggestionId] = 'rejected';
+                currentText = currentText.replace(
+                    `<span class="highlight" id="${suggestion.highlightId}">${suggestion.original}</span>`,
+                    suggestion.original
+                );
+            } else if (action === 'undo') {
+                delete suggestionStates[suggestionId];
+                // Restore highlight logic would go here
+            }
+            
+            textElement.innerHTML = currentText;
+            renderSuggestions();
+        }
+        
+        function handleAcceptAll() {
+            aiSuggestions.forEach(suggestion => {
+                if (!suggestionStates[suggestion.id]) {
+                    handleSuggestion(suggestion.id, 'accept');
+                }
+            });
+        }
+        
+        function handleRejectAll() {
+            aiSuggestions.forEach(suggestion => {
+                if (!suggestionStates[suggestion.id]) {
+                    handleSuggestion(suggestion.id, 'reject');
+                }
+            });
+        }
+        
+        function renderSuggestions() {
+            if (!elements.suggestionsContainer) return;
+            
+            elements.suggestionsContainer.innerHTML = '';
+            
+            aiSuggestions.forEach(suggestion => {
+                const state = suggestionStates[suggestion.id];
+                
+                const suggestionDiv = document.createElement('div');
+                suggestionDiv.className = 'p-4 border-b';
+                
+                const actionButtons = !state ? `
+                    <div class="flex space-x-4" style="margin-top: 8px;">
+                        <button onclick="handleSuggestion(${suggestion.id}, 'reject')" style="width: 20px; height: 20px; border: 2px solid black; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px;">✕</button>
+                        <button onclick="handleSuggestion(${suggestion.id}, 'accept')" style="width: 20px; height: 20px; background: black; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px;">✓</button>
+                    </div>
+                ` : `
+                    <div class="flex items-center justify-between" style="margin-top: 8px;">
+                        <span class="text-sm font-medium">${state === 'accepted' ? 'Accepted' : 'Rejected'}</span>
+                        <button onclick="handleSuggestion(${suggestion.id}, 'undo')" class="text-sm text-black hover:underline">Undo</button>
+                    </div>
+                `;
+                
+                suggestionDiv.innerHTML = `
+                    <div class="text-sm font-medium mb-2">Rule: ${suggestion.rule}</div>
+                    <div class="bg-white rounded p-3 mb-2 border text-sm">
+                        <span style="text-decoration: line-through; color: #6b7280;">${suggestion.original}</span>
+                        <span class="text-black"> → ${suggestion.suggested}</span>
+                    </div>
+                    ${actionButtons}
+                `;
+                
+                elements.suggestionsContainer.appendChild(suggestionDiv);
+            });
+        }
+        
+        // Event listeners
+        function initializeEventListeners() {
+            if (elements.createStoryBtn) {
+                elements.createStoryBtn.addEventListener('click', () => showView('templates'));
+            }
+            
+            if (elements.closeModalBtn) {
+                elements.closeModalBtn.addEventListener('click', () => showView('dashboard'));
+            }
+            
+            if (elements.closeVideoSelectionBtn) {
+                elements.closeVideoSelectionBtn.addEventListener('click', () => showView('templates'));
+            }
+
+            // Close button for loading state
+            document.addEventListener('click', function(e) {
+                if (e.target.id === 'close-video-loading-btn') {
+                    showView('templates');
+                }
+            });
+            
+            if (elements.backToDashboardBtn) {
+                elements.backToDashboardBtn.addEventListener('click', () => showView('dashboard'));
+            }
+            
+            if (elements.closeAiPanelBtn) {
+                elements.closeAiPanelBtn.addEventListener('click', () => {
+                    elements.aiPanel.classList.add('hidden');
+                });
+            }
+            
+            if (elements.acceptAllBtn) {
+                elements.acceptAllBtn.addEventListener('click', handleAcceptAll);
+            }
+            
+            if (elements.rejectAllBtn) {
+                elements.rejectAllBtn.addEventListener('click', handleRejectAll);
+            }
+            
+            // Template selection
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('template-btn')) {
+                    const templateType = e.target.getAttribute('data-template');
+                    if (templateType === 'Video Story') {
+                        showView('video-selection');
+                    } else {
+                        showView('editor');
+                        elements.aiPanel.classList.add('hidden');
+                    }
+                }
+            });
+            
+            // Modal close on outside click
+            if (elements.templatesModal) {
+                elements.templatesModal.addEventListener('click', function(e) {
+                    if (e.target === elements.templatesModal) {
+                        showView('dashboard');
+                    }
+                });
+            }
+            
+            if (elements.videoSelectionView) {
+                elements.videoSelectionView.addEventListener('click', function(e) {
+                    if (e.target === elements.videoSelectionView) {
+                        showView('templates');
+                    }
+                });
+            }
+        }
+        
+        // Make functions global
+        window.handleSuggestion = handleSuggestion;
+        window.selectVideo = selectVideo;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeEventListeners();
+            showView('dashboard');
+        });
+    </script>
+</body>
+</html>
