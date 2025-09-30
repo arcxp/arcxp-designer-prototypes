@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arc XP - Content Detail Prototype</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/lucide@0.263.1/dist/umd/lucide.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; overflow: hidden; }
+    #root { height: 100vh; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+    const { ArrowLeft, Edit3, X, Send, Globe, CheckCircle, Volume2, FileText, Share2, Key, MessageCircle } = lucide;
+
+    const STYLE_SUGGESTIONS = [
+      { id: 'suggestion-1', description: 'Use active voice', location: 'Paragraph 2', originalText: 'The partnership was announced by the companies', suggestedText: 'The companies announced the partnership' },
+      { id: 'suggestion-2', description: 'Add transition', location: 'Between sections', originalText: 'In a move that could reshape...', suggestedText: 'Furthermore, in a move that could reshape...' },
+      { id: 'suggestion-3', description: 'More engaging headline', location: 'Main headline', originalText: 'Breaking: Major Development in Technology Sector', suggestedText: 'Breaking: Tech Giants Unite in Unprecedented Partnership' }
+    ];
+
+    const CONTENT_SUGGESTIONS = [
+      { id: 'followup-1', description: 'Add expert quote', location: 'After paragraph 2', originalText: '[No content]', suggestedText: 'Industry analyst Sarah Chen notes: "This partnership represents a paradigm shift."' },
+      { id: 'followup-2', description: 'Include market impact', location: 'Before conclusion', originalText: '[No content]', suggestedText: 'Market analysts predict this alliance could influence stock valuations.' },
+      { id: 'followup-3', description: 'Add related context', location: 'Paragraph 1', originalText: 'In a move that could reshape...', suggestedText: 'Following months of speculation, in a move that could reshape...' }
+    ];
+
+    const CheckIcon = () => <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13.5 4.5L6 12L2.5 8.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+    const XIcon = () => <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M12 4L4 12M4 4L12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+    const ChevronUpIcon = () => <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M12 10L8 6L4 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+    const SparkleIcon = ({ size = 16, style = {} }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={style}><path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z" fill="currentColor" stroke="currentColor" strokeWidth="0.5"/><circle cx="18" cy="6" r="2" fill="currentColor" /><circle cx="6" cy="18" r="1.5" fill="currentColor" /></svg>;
+
+    const Button = ({ children, variant = 'neutral', onClick }) => {
+      const [isHovered, setIsHovered] = useState(false);
+      const variants = { neutral: { bg: '#EFF1F6', hoverBg: '#E0E3EE', color: '#191B34' }, primary: { bg: '#1F3CD0', hoverBg: '#091678', color: '#FFFFFF' }, secondary: { bg: '#FFFFFF', hoverBg: '#F8FAFD', color: '#191B34', border: true } };
+      const v = variants[variant];
+      return <button onClick={onClick} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} style={{ backgroundColor: isHovered ? v.hoverBg : v.bg, color: v.color, padding: '12px 24px', borderRadius: '4px', border: v.border ? '1px solid #BEC2D5' : 'none', fontSize: '16px', fontWeight: 500, cursor: 'pointer', transition: 'background-color 200ms' }}>{children}</button>;
+    };
+
+    const StatusButton = ({ children, onClick }) => {
+      const [isHovered, setIsHovered] = useState(false);
+      return <button onClick={onClick} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} style={{ fontSize: '14px', fontWeight: 500, padding: '8px 16px', height: '32px', borderRadius: '4px', border: '1px solid #BEC2D5', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', backgroundColor: isHovered ? '#EFF1F6' : '#FFFFFF', color: '#191B34', transition: 'all 200ms' }}>{children}</button>;
+    };
+
+    const AIButton = ({ onClick, state = 'rest' }) => {
+      const size = 52;
+      return <><style dangerouslySetInnerHTML={{ __html: `@keyframes rotate-border { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }` }} /><button onClick={onClick} style={{ width: size, height: size, borderRadius: '50%', border: 'none', cursor: 'pointer', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(31,60,208,0.2)', background: state === 'thinking' ? 'linear-gradient(135deg, #97E5FB 0%, #62CBF4 50%, #3BAEE9 100%)' : 'linear-gradient(135deg, #1F3CD0 0%, #526CE2 100%)', color: state === 'thinking' ? '#002669' : '#FFFFFF' }}>{state === 'thinking' && <><div style={{ position: 'absolute', top: -3, left: -3, width: size+6, height: size+6, borderRadius: '50%', background: 'conic-gradient(from 0deg, transparent 0deg, transparent 270deg, #1F3CD0 315deg, #526CE2 360deg)', animation: 'rotate-border 1.5s linear infinite', zIndex: 0 }} /><div style={{ position: 'absolute', top: 1, left: 1, width: size-2, height: size-2, borderRadius: '50%', background: 'linear-gradient(135deg, #97E5FB 0%, #62CBF4 50%, #3BAEE9 100%)', zIndex: 1 }} /></>}<SparkleIcon size={20} style={{ zIndex: 2, position: 'relative' }} /></button></>;
+    };
+
+    const Badge = ({ text }) => <span style={{ backgroundColor: '#E0E3EE', color: '#191B34', border: '1px solid #BEC2D5', fontSize: '14px', fontWeight: 500, borderRadius: '999px', padding: '4px 12px', display: 'inline-flex', alignItems: 'center' }}>{text}</span>;
+
+    const AINotificationCard = ({ title, status, suggestionsCount = 0, changesCount = 0, reviewCompleted = false, onReview }) => (
+      <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #EFF1F6', borderRadius: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            {reviewCompleted && <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12, width: 20, height: 20, borderRadius: '50%', backgroundColor: '#D2FAD2', color: '#20A453' }}><CheckIcon /></div>}
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#191B34', margin: 0 }}>{title}</h3>
+          </div>
+        </div>
+        <div style={{ padding: '0 12px 12px 12px' }}>
+          <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between' }}>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 14, fontWeight: 500, color: '#191B34', margin: '0 0 8px 0' }}>{status}</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {suggestionsCount > 0 && <p style={{ fontSize: 14, color: '#656A86', margin: 0 }}>{suggestionsCount} {suggestionsCount === 1 ? 'suggestion' : 'suggestions'}</p>}
+                {changesCount > 0 && <p style={{ fontSize: 14, color: '#656A86', margin: 0 }}>{changesCount} {changesCount === 1 ? 'change' : 'changes'}</p>}
+              </div>
+            </div>
+            <StatusButton onClick={onReview}>{reviewCompleted ? 'View' : 'Review'}</StatusButton>
+          </div>
+        </div>
+      </div>
+    );
+
+    const AIChangeCard = ({ title, description, actionText, actionType, actionCount = 1, badge, defaultExpanded = true }) => {
+      const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+      return (
+        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #EFF1F6', borderRadius: 0, boxShadow: '1px 2px 2px rgba(0,0,0,0.2), 0.5px 1px 1px rgba(0,0,0,0.2)' }}>
+          <div style={{ padding: 16, borderBottom: isExpanded ? '1px solid #E0E3EE' : 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} onClick={() => setIsExpanded(!isExpanded)}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#191B34', margin: 0 }}>{title}</h3>
+            <button style={{ color: '#656A86', transform: isExpanded ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 0.2s', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}><ChevronUpIcon /></button>
+          </div>
+          {isExpanded && <>
+            <div style={{ margin: '0 12px 12px 12px', padding: 12, backgroundColor: '#EDF2FE', borderRadius: 0 }}><p style={{ fontSize: 14, fontWeight: 500, color: '#656A86', margin: 0 }}>{description}</p></div>
+            <div style={{ padding: '0 12px 12px 12px' }}>
+              <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between' }}>
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: 14, fontWeight: 500, color: '#191B34', margin: '0 0 12px 0' }}><span style={{ color: '#1F3CD0', textDecoration: 'underline', cursor: 'pointer' }}>{actionCount} {actionType}</span> {actionText}</p>
+                  {badge && <div style={{ marginLeft: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }}>{badge.text.split(',').map((tag, i) => <Badge key={i} text={tag.trim()} />)}</div>}
+                </div>
+                <button style={{ color: '#1F3CD0', fontSize: 14, fontWeight: 500, background: 'none', border: 'none', padding: 0, cursor: 'pointer', marginLeft: 16, textDecoration: 'underline' }}>Undo</button>
+              </div>
+            </div>
+          </>}
+        </div>
+      );
+    };
+
+    const AISuggestionsCard = ({ title, suggestions, externalStates, onStateChange, defaultExpanded = true }) => {
+      const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+      const [expandedSuggestions, setExpandedSuggestions] = useState(new Set(suggestions.filter(s => !externalStates || externalStates[s.id] === 'pending').map(s => s.id)));
+      const suggestionStates = externalStates || suggestions.reduce((acc, s) => ({ ...acc, [s.id]: 'pending' }), {});
+      
+      const handleAccept = (id) => { if (onStateChange) onStateChange({ ...suggestionStates, [id]: 'accepted' }); setExpandedSuggestions(prev => { const n = new Set(prev); n.delete(id); return n; }); };
+      const handleReject = (id) => { if (onStateChange) onStateChange({ ...suggestionStates, [id]: 'rejected' }); setExpandedSuggestions(prev => { const n = new Set(prev); n.delete(id); return n; }); };
+      const handleUndo = (id) => { if (onStateChange) onStateChange({ ...suggestionStates, [id]: 'pending' }); setExpandedSuggestions(prev => { const n = new Set(prev); n.add(id); return n; }); };
+      const toggleShowMore = (id) => { setExpandedSuggestions(prev => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n; }); };
+      const handleAcceptAll = () => { if (onStateChange) onStateChange(Object.keys(suggestionStates).reduce((acc, id) => ({ ...acc, [id]: 'accepted' }), {})); setExpandedSuggestions(new Set()); };
+      const handleRejectAll = () => { if (onStateChange) onStateChange(Object.keys(suggestionStates).reduce((acc, id) => ({ ...acc, [id]: 'rejected' }), {})); setExpandedSuggestions(new Set()); };
+      
+      const pendingCount = Object.values(suggestionStates).filter(s => s === 'pending').length;
+      const hasPending = pendingCount > 0;
+
+      return (
+        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #BEC2D5', borderRadius: 0, boxShadow: '1px 2px 2px rgba(0,0,0,0.2), 0.5px 1px 1px rgba(0,0,0,0.2)' }}>
+          <div style={{ padding: 16, borderBottom: isExpanded ? '1px solid #E0E3EE' : 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} onClick={() => setIsExpanded(!isExpanded)}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 16, fontWeight: 700, color: '#191B34' }}>{title}</span>
+              {pendingCount > 0 && <div style={{ backgroundColor: '#D1DBFC', color: '#656A86', borderRadius: '50%', width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 600 }}>{pendingCount}</div>}
+            </div>
+            <button style={{ color: '#656A86', transform: isExpanded ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 0.2s', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}><ChevronUpIcon /></button>
+          </div>
+          {isExpanded && <div style={{ padding: 12 }}>
+            <div>
+              {suggestions.map((s, i) => {
+                const status = suggestionStates[s.id];
+                const isExp = expandedSuggestions.has(s.id);
+                const showDetails = status === 'pending' || isExp;
+                return (
+                  <div key={s.id} style={{ marginTop: i === 0 ? 0 : 12 }}>
+                    {status !== 'pending' && !isExp && <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: status === 'accepted' ? '#20A453' : '#DB283B', color: '#FFFFFF' }}>{status === 'accepted' ? <CheckIcon /> : <XIcon />}</div>
+                        <span style={{ fontSize: 14, fontWeight: 500, color: '#191B34' }}>{status === 'accepted' ? 'Accepted' : 'Rejected'}: {s.description}</span>
+                      </div>
+                      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                        <button onClick={(e) => { e.stopPropagation(); handleUndo(s.id); }} style={{ color: '#1F3CD0', fontSize: 14, fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>Undo</button>
+                        <button onClick={(e) => { e.stopPropagation(); toggleShowMore(s.id); }} style={{ color: '#1F3CD0', fontSize: 14, fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>Show more</button>
+                      </div>
+                    </div>}
+                    {showDetails && <div style={{ padding: 12, backgroundColor: '#F8FAFD', borderRadius: 4, border: '1px solid #E0E3EE' }}>
+                      <div style={{ marginBottom: 12 }}>
+                        <span style={{ fontSize: 14, fontWeight: 600, color: '#191B34', display: 'block', marginBottom: 4 }}>{s.description}</span>
+                        <span style={{ fontSize: 12, color: '#656A86' }}>{s.location}</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: status === 'pending' ? 12 : 0 }}>
+                        <span style={{ fontSize: 14, color: '#656A86', textDecoration: 'line-through' }}>{s.originalText}</span>
+                        <span style={{ color: '#656A86' }}>→</span>
+                        <span style={{ fontSize: 14, fontWeight: 500, color: '#191B34' }}>{s.suggestedText}</span>
+                      </div>
+                      {status === 'pending' && <div style={{ display: 'flex', gap: 8 }}>
+                        <button onClick={(e) => { e.stopPropagation(); handleReject(s.id); }} style={{ width: 24, height: 24, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FDDED3', color: '#DB283B', border: 'none', cursor: 'pointer' }}><XIcon /></button>
+                        <button onClick={(e) => { e.stopPropagation(); handleAccept(s.id); }} style={{ width: 24, height: 24, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#D2FAD2', color: '#20A453', border: 'none', cursor: 'pointer' }}><CheckIcon /></button>
+                      </div>}
+                    </div>}
+                  </div>
+                );
+              })}
+            </div>
+            {hasPending && <div style={{ display: 'flex', gap: 8, marginTop: 12, paddingTop: 12, borderTop: '1px solid #E0E3EE' }}>
+              <button onClick={handleRejectAll} style={{ flex: 1, padding: '8px 16px', backgroundColor: '#FFFFFF', color: '#191B34', border: '1px solid #BEC2D5', borderRadius: 4, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>Reject all</button>
+              <button onClick={handleAcceptAll} style={{ flex: 1, padding: '8px 16px', backgroundColor: '#1F3CD0', color: '#FFFFFF', border: 'none', borderRadius: 4, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>Accept all</button>
+            </div>}
+          </div>}
+        </div>
+      );
+    };
+
+    const ContentDetailPrototype = () => {
+      const [aiPaneOpen, setAiPaneOpen] = useState(false);
+      const [aiButtonState, setAiButtonState] = useState('rest');
+      const [notificationMode, setNotificationMode] = useState(false);
+      const [activeReview, setActiveReview] = useState(null);
+      const [savePressedOnce, setSavePressedOnce] = useState(false);
+      const [styleSuggestionStates, setStyleSuggestionStates] = useState(STYLE_SUGGESTIONS.reduce((acc, s) => ({ ...acc, [s.id]: 'pending' }), {}));
+      const [contentSuggestionStates, setContentSuggestionStates] = useState(CONTENT_SUGGESTIONS.reduce((acc, s) => ({ ...acc, [s.id]: 'pending' }), {}));
+
+      const areStyleHandled = Object.values(styleSuggestionStates).every(s => s !== 'pending');
+      const areContentHandled = Object.values(contentSuggestionStates).every(s => s !== 'pending');
+
+      const handleSave = () => { setAiButtonState('thinking'); setNotificationMode(false); setTimeout(() => { setAiButtonState('rest'); setSavePressedOnce(true); setNotificationMode(true); setAiPaneOpen(true); }, 2500); };
+      const handleAIClick = () => { if (!aiPaneOpen) { setAiPaneOpen(true); if (savePressedOnce) setNotificationMode(true); } };
+      const handleReview = (id, title) => { setActiveReview({ id, title }); setNotificationMode(false); };
+      const handleBack = () => { setActiveReview(null); setNotificationMode(true); };
+
+      return (
+        <div style={{ minHeight: '100vh', backgroundColor: '#F8FAFD' }}>
+          <nav style={{ backgroundColor: '#363A53' }}>
+            <div style={{ display: 'flex', alignItems: 'center', height: 64, padding: '0 24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginRight: 32 }}>
+                <div style={{ width: 32, height: 32, borderRadius: '50%', backgroundColor: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span style={{ fontWeight: 'bold', fontSize: 14, color: '#363A53' }}>A</span></div>
+                <span style={{ fontSize: 16, fontWeight: 500, color: '#FFFFFF' }}>Arc XP</span>
+              </div>
+              <div style={{ flex: 1 }}><button style={{ padding: '16px 8px', fontSize: 14, fontWeight: 500, color: '#FFFFFF', background: 'none', border: 'none', cursor: 'pointer' }}>Stories</button></div>
+              <span style={{ color: '#FFFFFF', fontSize: 14 }}>John Doe</span>
+            </div>
+          </nav>
+          
+          <div style={{ backgroundColor: '#FFFFFF', borderBottom: '1px solid #E0E3EE', padding: '16px 24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h1 style={{ fontSize: 18, fontWeight: 600, color: '#191B34', margin: 0 }}>Article: Breaking News Story</h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <AIButton onClick={handleAIClick} state={aiButtonState} />
+                <Button variant="secondary">Cancel</Button>
+                <Button variant="primary" onClick={handleSave}>Save</Button>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', height: 'calc(100vh - 136px)' }}>
+            <div style={{ flex: 1, padding: '24px 64px', backgroundColor: '#FFFFFF', overflow: 'auto' }}>
+              <h1 style={{ fontSize: 32, fontWeight: 700, marginBottom: 16, color: '#191B34' }}>Breaking: Major Development in Technology Sector</h1>
+              <p style={{ fontSize: 16, color: '#191B34', lineHeight: 1.6 }}>In a move that could reshape the entire technology landscape, three of Silicon Valley's biggest players announced today a groundbreaking partnership.</p>
+            </div>
+
+            {aiPaneOpen && <div style={{ width: 400, background: 'linear-gradient(135deg, #D1DBFC, #CAF4FD)', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ padding: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {activeReview ? <button onClick={handleBack} style={{ padding: 8, backgroundColor: '#EFF1F6', border: 'none', borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center' }}><ArrowLeft size={16} /></button> : <SparkleIcon size={16} style={{ color: '#1F3CD0' }} />}
+                  <span style={{ fontSize: 16, fontWeight: 600, color: '#191B34' }}>{activeReview ? 'Review' : 'AI Assistant'}</span>
+                </div>
+                <button onClick={() => setAiPaneOpen(false)} style={{ padding: 8, backgroundColor: '#EFF1F6', border: 'none', borderRadius: 4, cursor: 'pointer' }}><X size={16} /></button>
+              </div>
+
+              <div style={{ flex: 1, overflow: 'auto', padding: 16 }}>
+                {activeReview && savePressedOnce && <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <AISuggestionsCard title="Style guide review" suggestions={STYLE_SUGGESTIONS} externalStates={styleSuggestionStates} onStateChange={setStyleSuggestionStates} defaultExpanded={!activeReview || activeReview.id === 'style'} />
+                  <AIChangeCard title="SEO optimization" description="AI has automatically optimized your article's SEO metadata." actionText="were added to improve search visibility." actionType="Keywords" actionCount={2} badge={{ text: "partnership, innovation" }} defaultExpanded={!activeReview || activeReview.id === 'seo'} />
+                  <AISuggestionsCard title="Follow up" suggestions={CONTENT_SUGGESTIONS} externalStates={contentSuggestionStates} onStateChange={setContentSuggestionStates} defaultExpanded={!activeReview || activeReview.id === 'followup'} />
+                </div>}
+
+                {notificationMode && !activeReview && savePressedOnce && <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <AINotificationCard title="Style guide review" status={areStyleHandled ? "Reviewed" : "Ready for review"} suggestionsCount={3} reviewCompleted={areStyleHandled} onReview={() => handleReview('style', 'Style guide review')} />
+                  <AINotificationCard title="SEO optimization" status="Ready for review" changesCount={2} onReview={() => handleReview('seo', 'SEO optimization')} />
+                  <AINotificationCard title="Follow up" status={areContentHandled ? "Reviewed" : "Ready for review"} suggestionsCount={3} reviewCompleted={areContentHandled} onReview={() => handleReview('followup', 'Follow up')} />
+                </div>}
+
+                {!notificationMode && !activeReview && <div style={{ textAlign: 'center', padding: '32px 16px' }}>
+                  <SparkleIcon size={32} style={{ color: '#191B34', margin: '0 auto 16px' }} />
+                  <h3 style={{ fontSize: 18, fontWeight: 600, color: '#191B34', margin: '0 0 8px 0' }}>AI Assistant</h3>
+                  <p style={{ fontSize: 14, color: '#656A86' }}>Click Save to generate AI suggestions</p>
+                </div>}
+              </div>
+
+              <div style={{ padding: 16, borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <input type="text" placeholder="Ask AI Editor..." style={{ flex: 1, padding: 12, backgroundColor: 'rgba(255,255,255,0.8)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 4, fontSize: 14, outline: 'none' }} />
+                  <button style={{ padding: 12, backgroundColor: '#1F3CD0', color: '#FFFFFF', border: 'none', borderRadius: 4, cursor: 'pointer' }}><Send size={16} /></button>
+                </div>
+              </div>
+            </div>}
+          </div>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<ContentDetailPrototype />);
+  </script>
+</body>
+</html>
