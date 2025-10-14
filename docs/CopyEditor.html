@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Story Editor Prototype</title>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        #root {
+            width: 100%;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        function StoryEditorPrototype() {
+          const [view, setView] = useState('list');
+          const [selectedStory, setSelectedStory] = useState(null);
+          const [expandedCard, setExpandedCard] = useState(null);
+          const [expandedSection, setExpandedSection] = useState(null);
+
+          const stories = [
+            { id: 1, title: 'Rookie Sensation Stuns Field at Monaco Grand Prix', status: 'In Progress', updated: '2 hours ago' },
+            { id: 2, title: 'Feature Story: Community Spotlight', status: 'In Progress', updated: '5 hours ago' },
+            { id: 3, title: 'Sports Update: Championship Finals', status: 'In Progress', updated: '1 day ago' },
+          ];
+
+          useEffect(() => {
+            if (view === 'loading') {
+              const timer = setTimeout(() => {
+                setView('editor');
+              }, 3000);
+              return () => clearTimeout(timer);
+            }
+          }, [view]);
+
+          const handleStoryClick = (story) => {
+            setSelectedStory(story);
+            setView('loading');
+          };
+
+          const handleSEOClick = () => {
+            setExpandedSection('seo');
+            setExpandedCard(null);
+            setView('review');
+          };
+
+          const handleFactCheckClick = (cardId) => {
+            setExpandedSection('factcheck');
+            setExpandedCard(cardId);
+            setView('review');
+          };
+
+          const handleStyleGrammarClick = (cardId) => {
+            setExpandedCard(cardId);
+            setExpandedSection(null);
+            setView('review');
+          };
+
+          const handleDistributionClick = (cardId) => {
+            setExpandedCard(cardId);
+            setExpandedSection(null);
+            setView('review');
+          };
+
+          const handleBackClick = () => {
+            setView('editor');
+          };
+
+          const Workbar = ({ storyTitle, showPublish = true }) => {
+            const [isEditing, setIsEditing] = useState(false);
+            const [editValue, setEditValue] = useState(storyTitle);
+
+            return (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '12px 16px',
+                backgroundColor: '#FFFFFF',
+                borderBottom: '1px solid #000000'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          onBlur={() => setIsEditing(false)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') setIsEditing(false);
+                            if (e.key === 'Escape') {
+                              setEditValue(storyTitle);
+                              setIsEditing(false);
+                            }
+                          }}
+                          style={{
+                            fontSize: '16px',
+                            fontFamily: 'Output Sans, sans-serif',
+                            fontWeight: 500,
+                            lineHeight: '120%',
+                            letterSpacing: '0.02em',
+                            color: '#000000',
+                            backgroundColor: 'transparent',
+                            border: 'none',
+                            outline: 'none',
+                            padding: 0
+                          }}
+                          autoFocus
+                        />
+                      ) : (
+                        <button
+                          onClick={() => setIsEditing(true)}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: 0
+                          }}
+                        >
+                          <span style={{
+                            fontSize: '16px',
+                            fontFamily: 'Output Sans, sans-serif',
+                            fontWeight: 500,
+                            lineHeight: '120%',
+                            letterSpacing: '0.02em',
+                            color: '#000000'
+                          }}>
+                            {storyTitle}
+                          </span>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                    <span style={{
+                      fontSize: '14px',
+                      fontFamily: 'Output Sans, sans-serif',
+                      fontWeight: 500,
+                      lineHeight: '120%',
+                      letterSpacing: '0.02em',
+                      color: '#000000',
+                      marginTop: '4px'
+                    }}>
+                      Last edited Oct 13, 2025 at 2:30 pm
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  {showPublish && (
+                    <button
+                      onClick={() => console.log('Publish clicked')}
+                      style={{
+                        fontFamily: 'Output Sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                        fontSize: '16px',
+                        fontWeight: 500,
+                        lineHeight: '120%',
+                        letterSpacing: '0.02em',
+                        padding: '12px 24px',
+                        height: '44px',
+                        borderRadius: '4px',
+                        border: '1px solid #000000',
+                        backgroundColor: '#000000',
+                        color: '#FFFFFF',
+                        cursor: 'pointer',
+                        transition: 'all 200ms ease-in-out',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        outline: 'none',
+                        userSelect: 'none',
+                        whiteSpace: 'nowrap'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#333333';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#000000';
+                      }}
+                    >
+                      Publish
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          };
+
+          if (view === 'list') {
+            return (
+              <div style={{ fontFamily: 'Output Sans, sans-serif', minHeight: '100vh', backgroundColor: '#FFFFFF' }}>
+                <div style={{ 
+                  backgroundColor: '#FFFFFF', 
+                  borderBottom: '1px solid #000000',
+                  padding: '16px 24px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
+                }}>
+                  <h1 style={{ 
+                    fontSize: '25.89px', 
+                    fontWeight: 500, 
+                    color: '#000000', 
+                    margin: 0,
+                    letterSpacing: '0.02em'
+                  }}>
+                    Stories in Progress
+                  </h1>
+                </div>
+                
+                <div style={{ padding: '24px', maxWidth: '1200px' }}>
+                  <div style={{
+                    backgroundColor: '#F5F5F5',
+                    border: '1px solid #000000',
+                    borderRadius: '4px',
+                    padding: '16px 20px',
+                    marginBottom: '24px'
+                  }}>
+                    <p style={{
+                      fontSize: '14px',
+                      color: '#000000',
+                      margin: 0,
+                      lineHeight: '1.6'
+                    }}>
+                      <strong>Note:</strong> This is a proxy for Arc Home or other moment where a managing editor can access a draft of a story which the copy editor agent has worked on.
+                    </p>
+                  </div>
+
+                  {stories.map(story => (
+                    <div
+                      key={story.id}
+                      onClick={() => handleStoryClick(story)}
+                      style={{
+                        backgroundColor: '#FFFFFF',
+                        border: '1px solid #000000',
+                        borderRadius: '4px',
+                        padding: '20px',
+                        marginBottom: '12px',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#F0F0F0';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#FFFFFF';
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div>
+                          <h3 style={{ 
+                            fontSize: '18.72px', 
+                            fontWeight: 500, 
+                            color: '#000000', 
+                            margin: '0 0 8px 0',
+                            letterSpacing: '0.02em'
+                          }}>
+                            {story.title}
+                          </h3>
+                          <p style={{ 
+                            fontSize: '14px', 
+                            color: '#000000', 
+                            margin: 0 
+                          }}>
+                            Updated {story.updated}
+                          </p>
+                        </div>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                          {story.id === 1 && (
+                            <span style={{
+                              backgroundColor: '#000000',
+                              color: '#FFFFFF',
+                              fontSize: '12px',
+                              fontWeight: 600,
+                              padding: '4px 12px',
+                              borderRadius: '4px',
+                              border: '1px solid #000000'
+                            }}>
+                              Copy edit complete
+                            </span>
+                          )}
+                          <span style={{
+                            backgroundColor: '#FFFFFF',
+                            color: '#000000',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            padding: '4px 12px',
+                            borderRadius: '4px',
+                            border: '1px solid #000000'
+                          }}>
+                            {story.status}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          }
+
+          if (view === 'loading') {
+            return (
+              <div style={{
+                fontFamily: 'Output Sans, sans-serif',
+                minHeight: '100vh',
+                backgroundColor: '#FFFFFF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexDirection: 'column'
+              }}>
+                <div style={{
+                  width: '48px',
+                  height: '48px',
+                  border: '4px solid #000000',
+                  borderTop: '4px solid #FFFFFF',
+                  borderRadius: '50%',
+                  animation: 'spin 1s linear infinite'
+                }}></div>
+                <p style={{
+                  fontSize: '16px',
+                  color: '#000000',
+                  marginTop: '20px'
+                }}>
+                  Loading story...
+                </p>
+                <style>{`
+                  @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                  }
+                `}</style>
+              </div>
+            );
+          }
+
+          if (view === 'editor') {
+            return (
+              <div style={{ fontFamily: 'Output Sans, sans-serif', minHeight: '100vh', backgroundColor: '#FFFFFF' }}>
+                <Workbar storyTitle="Rookie Sensation Stuns Field at Monaco Grand Prix" showPublish={true} />
+
+                <div style={{ display: 'flex', height: 'calc(100vh - 73px)' }}>
+                  <div style={{ flex: 1, padding: '80px 100px', overflowY: 'auto', height: '100%' }}>
+                    <div style={{ maxWidth: '800px' }}>
+                      <div style={{
+                        backgroundColor: '#FFFFFF',
+                        height: '300px',
+                        border: '1px solid #000000',
+                        borderRadius: '4px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: '32px'
+                      }}>
+                        <span style={{
+                          fontSize: '16px',
+                          color: '#000000',
+                          fontStyle: 'italic'
+                        }}>
+                          hero photo
+                        </span>
+                      </div>
+
+                      <p style={{
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        lineHeight: '1.6',
+                        color: '#000000',
+                        marginBottom: '8px'
+                      }}>
+                        Date: May 16, 2010
+                      </p>
+
+                      <p style={{
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        lineHeight: '1.6',
+                        color: '#000000',
+                        marginBottom: '20px'
+                      }}>
+                        Location: Monte Carlo, Monaco
+                      </p>
+
+                      <p style={{
+                        fontSize: '16px',
+                        lineHeight: '1.6',
+                        color: '#000000',
+                        marginBottom: '20px'
+                      }}>
+                        In one of the most dramatic Monaco Grand Prix in recent memory, rookie driver Luca Moretti of Scuderia Veloce took his maiden Formula One victory after a rain-soaked, incident-filled race that saw several championship contenders falter.
+                      </p>
+
+                      <p style={{
+                        fontSize: '16px',
+                        lineHeight: '1.6',
+                        color: '#000000',
+                        marginBottom: '20px'
+                      }}>
+                        Starting fourth on the grid, Moretti displayed extraordinary control in treacherous conditions, making a daring move past championship leader Marcus Klein on lap 42 to seize the lead. Despite pressure from seasoned veterans in the final laps, the Italian rookie held his nerve to cross the finish line first — earning both his team's and his own first-ever F1 victory.
+                      </p>
+
+                      <p style={{
+                        fontSize: '16px',
+                        lineHeight: '1.6',
+                        color: '#000000',
+                        marginBottom: '20px'
+                      }}>
+                        "It's unbelievable," said an emotional Moretti after the race. "Monaco is every driver's dream, and to win here — especially in my first season — it's just incredible. The team gave me a fantastic car, and we made the right calls when it mattered."
+                      </p>
+
+                      <p style={{
+                        fontSize: '16px',
+                        lineHeight: '1.6',
+                        color: '#000000',
+                        marginBottom: '20px'
+                      }}>
+                        The race was marred by multiple safety car periods following crashes involving Henrik Dahl (Nordic GP) and Carlos Mendes (Phoenix Racing). Meanwhile, championship favorites Klein and Ethan Shaw (Apex Motorsport) finished fifth and seventh respectively, losing valuable points in the title race.
+                      </p>
+
+                      <p style={{
+                        fontSize: '16px',
+                        lineHeight: '1.6',
+                        color: '#000000',
+                        marginBottom: '20px'
+                      }}>
+                        The win propels Moretti into fifth place in the driver standings, only 25 points behind leader Klein. Scuderia Veloce, a newcomer team this season, now sits an impressive third in the Constructors' standings.
+                      </p>
+
+                      <p style={{
+                        fontSize: '16px',
+                        lineHeight: '1.6',
+                        color: '#000000',
+                        marginBottom: '20px'
+                      }}>
+                        The next race takes the grid to Montreal for the Canadian Grand Prix, where teams will look to recover from the chaos of Monaco and regain their footing in what's shaping up to be one of the most unpredictable F1 seasons in recent years.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div style={{
+                    width: '400px',
+                    borderLeft: '1px solid #000000',
+                    backgroundColor: '#FFFFFF',
+                    padding: '24px',
+                    overflowY: 'auto',
+                    height: '100%'
+                  }}>
+                    <div style={{
+                      backgroundColor: '#333333',
+                      padding: '12px 16px',
+                      border: '1px solid #000000',
+                      borderRadius: '4px',
+                      marginBottom: '24px'
+                    }}>
+                      <p style={{
+                        fontSize: '14px',
+                        color: '#FFFFFF',
+                        margin: 0,
+                        fontStyle: 'italic'
+                      }}>
+                        This story is ready for review and publish.
+                      </p>
+                    </div>
+
+                    <div style={{ marginBottom: '24px' }}>
+                      <h3 style={{
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        color: '#000000',
+                        marginBottom: '12px',
+                        letterSpacing: '0.02em'
+                      }}>
+                        Style & Grammar
+                      </h3>
+                      <div 
+                        onClick={() => handleStyleGrammarClick('style-guide')}
+                        style={{
+                        border: '1px solid #000000',
+                        borderRadius: '4px',
+                        padding: '12px',
+                        marginBottom: '8px',
+                        backgroundColor: '#FFFFFF',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#F0F0F0';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = '#FFFFFF';
+                        }}
+                      >
+                        <p style={{
+                          fontSize: '14px',
+                          fontWeight: 600,
+                          color: '#000000',
+                          marginBottom: '4px'
+                        }}>
+                          Style guide applied
+                        </p>
+                        <span style={{
+                          fontSize: '14px',
+                          color: '#000000'
+                        }}>
+                          Changed "Grands Prix" to "Grand Prix" for AP style consistency
+                        </span>
+                      </div>
+                      <div 
+                        onClick={() => handleStyleGrammarClick('grammar-correction')}
+                        style={{
+                        border: '1px solid #000000',
+                        borderRadius: '4px',
+                        padding: '12px',
+                        backgroundColor: '#FFFFFF',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#F0F0F0';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = '#FFFFFF';
+                        }}
+                      >
+                        <p style={{
+                          fontSize: '14px',
+                          fontWeight: 600,
+                          color: '#000000',
+                          marginBottom: '4px'
+                        }}>
+                          Grammar correction
+                        </p>
+                        <span style={{
+                          fontSize: '14px',
+                          color: '#000000'
+                        }}>
+                          Added comma in "rain-soaked, incident-filled" for improved clarity
+                        </span>
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: '24px' }}>
+                      <h3 style={{
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        color: '#000000',
+                        marginBottom: '12px',
+                        letterSpacing: '0.02em'
+                      }}>
+                        Fact checking
+                      </h3>
+                      <div 
+                        onClick={() => handleFactCheckClick('factcheck-driver')}
+                        style={{
+                        border: '1px solid #000000',
+                        borderRadius: '4px',
+                        padding: '12px',
+                        marginBottom: '8px',
+                        backgroundColor: '#FFFFFF',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#F0F0F0';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = '#FFFFFF';
+                        }}
+                      >
+                        <p style={{
+                          fontSize: '14px',
+                          fontWeight: 600,
+                          color: '#000000',
+                          marginBottom: '4px'
+                        }}>
+                          Verify driver standings
+                        </p>
+                        <span style={{
+                          fontSize: '14px',
+                          color: '#000000'
+                        }}>
+                          Confirm Luca Moretti's position (5th) and points deficit (25 points) in official F1 standings
+                        </span>
+                      </div>
+                      <div 
+                        onClick={() => handleFactCheckClick('factcheck-team')}
+                        style={{
+                        border: '1px solid #000000',
+                        borderRadius: '4px',
+                        padding: '12px',
+                        backgroundColor: '#FFFFFF',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#F0F0F0';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = '#FFFFFF';
+                        }}
+                      >
+                        <p style={{
+                          fontSize: '14px',
+                          fontWeight: 600,
+                          color: '#000000',
+                          marginBottom: '4px'
+                        }}>
+                          Verify team information
+                        </p>
+                        <span style={{
+                          fontSize: '14px',
+                          color: '#000000'
+                        }}>
+                          Confirm Scuderia Veloce's constructor standings position (3rd) and team status
+                        </span>
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: '24px' }}>
+                      <h3 style={{
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        color: '#000000',
+                        marginBottom: '12px',
+                        letterSpacing: '0.02em'
+                      }}>
+                        SEO & Tags
+                      </h3>
+                      <div
+                        onClick={handleSEOClick}
+                        style={{
+                          border: '1px solid #000000',
+                          borderRadius: '4px',
+                          padding: '12px',
+                          backgroundColor: '#FFFFFF',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#F0F0F0';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = '#FFFFFF';
+                        }}
+                      >
+                        <p style={{
+                          fontSize: '14px',
+                          fontWeight: 600,
+                          color: '#000000',
+                          marginBottom: '4px'
+                        }}>
+                          Tags added
+                        </p>
+                        <span style={{
+                          fontSize: '14px',
+                          color: '#000000'
+                        }}>
+                          5 SEO keywords and 3 content tags added
+                        </span>
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: '24px' }}>
+                      <h3 style={{
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        color: '#000000',
+                        marginBottom: '12px',
+                        letterSpacing: '0.02em'
+                      }}>
+                        Distribution
+                      </h3>
+                      <div 
+                        onClick={() => handleDistributionClick('distribution-facebook')}
+                        style={{
+                        border: '1px solid #000000',
+                        borderRadius: '4px',
+                        padding: '12px',
+                        marginBottom: '8px',
+                        backgroundColor: '#FFFFFF',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#F0F0F0';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = '#FFFFFF';
+                        }}
+                      >
+                        <p style={{
+                          fontSize: '14px',
+                          fontWeight: 600,
+                          color: '#000000',
+                          marginBottom: '4px'
+                        }}>
+                          Facebook version ready
+                        </p>
+                        <span style={{
+                          fontSize: '14px',
+                          color: '#000000'
+                        }}>
+                          Preview optimized post for Facebook
+                        </span>
+                      </div>
+                      <div 
+                        onClick={() => handleDistributionClick('distribution-newsletter')}
+                        style={{
+                        border: '1px solid #000000',
+                        borderRadius: '4px',
+                        padding: '12px',
+                        backgroundColor: '#FFFFFF',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#F0F0F0';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = '#FFFFFF';
+                        }}
+                      >
+                        <p style={{
+                          fontSize: '14px',
+                          fontWeight: 600,
+                          color: '#000000',
+                          marginBottom: '4px'
+                        }}>
+                          Newsletter version ready
+                        </p>
+                        <span style={{
+                          fontSize: '14px',
+                          color: '#000000'
+                        }}>
+                          Preview newsletter format
+                        </span>
+                      </div>
+                    </div>
+
+                    <div style={{
+                      borderTop: '1px solid #000000',
+                      paddingTop: '16px',
+                      marginTop: 'auto'
+                    }}>
+                      <p style={{
+                        fontSize: '12px',
+                        color: '#000000',
+                        margin: 0,
+                        fontStyle: 'italic'
+                      }}>
+                        Ask Arc or type '/' for actions
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
+          if (view === 'review') {
+            return (
+              <div style={{ fontFamily: 'Output Sans, sans-serif', minHeight: '100vh', backgroundColor: '#FFFFFF' }}>
+                <Workbar storyTitle="Rookie Sensation Stuns Field at Monaco Grand Prix" showPublish={true} />
+
+                <div style={{ display: 'flex', height: 'calc(100vh - 73px)' }}>
+                  <div style={{ flex: 1, padding: '80px 100px', overflowY: 'auto', height: '100%' }}>
+                    <div style={{ maxWidth: '800px' }}>
+                      <div style={{
+                        backgroundColor: '#FFFFFF',
+                        height: '300px',
+                        border: '1px solid #000000',
+                        borderRadius: '4px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: '32px'
+                      }}>
+                        <span style={{
+                          fontSize: '16px',
+                          color: '#000000',
+                          fontStyle: 'italic'
+                        }}>
+                          hero photo
+                        </span>
+                      </div>
+
+                      <p style={{
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        lineHeight: '1.6',
+                        color: '#000000',
+                        marginBottom: '8px'
+                      }}>
+                        Date: May 16, 2010
+                      </p>
+
+                      <p style={{
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        lineHeight: '1.6',
+                        color: '#000000',
+                        marginBottom: '20px'
+                      }}>
+                        Location: Monte Carlo, Monaco
+                      </p>
+
+                      <p style={{
+                        fontSize: '16px',
+                        lineHeight: '1.6',
+                        color: '#000000',
+                        marginBottom: '20px'
+                      }}>
+                        In one of the most dramatic Monaco {expandedCard === 'style-guide' ? (
+                          <span style={{ 
+                            backgroundColor: '#C4E3F3',
+                            padding: '2px 0'
+                          }}>
+                            Grand Prix
+                          </span>
+                        ) : 'Grand Prix'} in recent memory, rookie driver Luca Moretti of Scuderia Veloce took his maiden Formula One victory after a {expandedCard === 'grammar-correction' ? (
+                          <span style={{ 
+                            backgroundColor: '#C4E3F3',
+                            padding: '2px 0'
+                          }}>
+                            rain-soaked, incident-filled
+                          </span>
+                        ) : 'rain-soaked, incident-filled'} race that saw several championship contenders falter.
+                      </p>
+
+                      <p style={{
+                        fontSize: '16px',
+                        lineHeight: '1.6',
+                        color: '#000000',
+                        marginBottom: '20px'
+                      }}>
+                        Starting fourth on the grid, Moretti displayed extraordinary control in treacherous conditions, making a daring move past championship leader Marcus Klein on lap 42 to seize the lead. Despite pressure from seasoned veterans in the final laps, the Italian rookie held his nerve to cross the finish line first — earning both his team's and his own first-ever F1 victory.
+                      </p>
+
+                      <p style={{
+                        fontSize: '16px',
+                        lineHeight: '1.6',
+                        color: '#000000',
+                        marginBottom: '20px'
+                      }}>
+                        "It's unbelievable," said an emotional Moretti after the race. "Monaco is every driver's dream, and to win here — especially in my first season — it's just incredible. The team gave me a fantastic car, and we made the right calls when it mattered."
+                      </p>
+
+                      <p style={{
+                        fontSize: '16px',
+                        lineHeight: '1.6',
+                        color: '#000000',
+                        marginBottom: '20px'
+                      }}>
+                        The race was marred by multiple safety car periods following crashes involving Henrik Dahl (Nordic GP) and Carlos Mendes (Phoenix Racing). Meanwhile, championship favorites Klein and Ethan Shaw (Apex Motorsport) finished fifth and seventh respectively, losing valuable points in the title race.
+                      </p>
+
+                      <p style={{
+                        fontSize: '16px',
+                        lineHeight: '1.6',
+                        color: '#000000',
+                        marginBottom: '20px'
+                      }}>
+                        The win propels Moretti into {expandedSection === 'factcheck' ? (
+                          <span style={{ 
+                            backgroundColor: '#C4E3F3',
+                            padding: '2px 0'
+                          }}>
+                            fifth place
+                          </span>
+                        ) : 'fifth place'} in the driver standings, only {expandedSection === 'factcheck' ? (
+                          <span style={{ 
+                            backgroundColor: '#C4E3F3',
+                            padding: '2px 0'
+                          }}>
+                            25 points
+                          </span>
+                        ) : '25 points'} behind leader Klein. {expandedSection === 'factcheck' ? (
+                          <span style={{ 
+                            backgroundColor: '#C4E3F3',
+                            padding: '2px 0'
+                          }}>
+                            Scuderia Veloce
+                          </span>
+                        ) : 'Scuderia Veloce'}, a newcomer team this season, now sits an impressive {expandedSection === 'factcheck' ? (
+                          <span style={{ 
+                            backgroundColor: '#C4E3F3',
+                            padding: '2px 0'
+                          }}>
+                            third
+                          </span>
+                        ) : 'third'} in the Constructors' standings.
+                      </p>
+
+                      <p style={{
+                        fontSize: '16px',
+                        lineHeight: '1.6',
+                        color: '#000000',
+                        marginBottom: '20px'
+                      }}>
+                        The next race takes the grid to Montreal for the Canadian Grand Prix, where teams will look to recover from the chaos of Monaco and regain their footing in what's shaping up to be one of the most unpredictable F1 seasons in recent years.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div style={{
+                    width: '400px',
+                    borderLeft: '1px solid #000000',
+                    backgroundColor: '#FFFFFF',
+                    padding: '24px',
+                    overflowY: 'auto',
+                    height: '100%'
+                  }}>
+                    <button
+                      onClick={handleBackClick}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        background: 'none',
+                        border: 'none',
+                        padding: '8px 0',
+                        marginBottom: '24px',
+                        cursor: 'pointer',
+                        fontSize: '16px',
+                        fontWeight: 600,
+                        color: '#000000',
+                        fontFamily: 'Output Sans, sans-serif',
+                        fontStyle: 'italic'
+                      }}
+                    >
+                      <span>{'<'}</span> Review
+                    </button>
+
+                    {expandedCard === 'style-guide' ? (
+                      <div style={{
+                        marginBottom: '24px',
+                        border: '1px solid #000000',
+                        borderRadius: '4px',
+                        backgroundColor: '#FFFFFF'
+                      }}>
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '16px',
+                          borderBottom: '1px solid #000000'
+                        }}>
+                          <h3 style={{
+                            fontSize: '14px',
+                            fontWeight: 600,
+                            color: '#000000',
+                            margin: 0,
+                            fontStyle: 'italic',
+                            letterSpacing: '0.02em'
+                          }}>
+                            Style & Grammar
+                          </h3>
+                          <span style={{
+                            fontSize: '14px',
+                            color: '#000000',
+                            cursor: 'pointer'
+                          }}>
+                            ^
+                          </span>
+                        </div>
+
+                        <div style={{ padding: '16px' }}>
+                          <div style={{ marginBottom: '20px' }}>
+                            <p style={{
+                              fontSize: '14px',
+                              fontWeight: 600,
+                              color: '#000000',
+                              marginBottom: '8px',
+                              fontStyle: 'italic'
+                            }}>
+                              Style guide change applied:
+                            </p>
+                            <p style={{
+                              fontSize: '14px',
+                              color: '#000000',
+                              marginBottom: '12px'
+                            }}>
+                              Changed "Grands Prix" to "Grand Prix" throughout the article to maintain AP style consistency.
+                            </p>
+                            <div style={{
+                              backgroundColor: '#FFFFFF',
+                              border: '1px solid #000000',
+                              borderRadius: '4px',
+                              padding: '12px'
+                            }}>
+                              <p style={{
+                                fontSize: '12px',
+                                fontWeight: 600,
+                                color: '#000000',
+                                marginBottom: '4px'
+                              }}>
+                                Original text:
+                              </p>
+                              <p style={{
+                                fontSize: '12px',
+                                color: '#000000',
+                                margin: '0 0 8px 0'
+                              }}>
+                                "In one of the most dramatic Monaco Grands Prix..."
+                              </p>
+                              <p style={{
+                                fontSize: '12px',
+                                fontWeight: 600,
+                                color: '#000000',
+                                marginBottom: '4px'
+                              }}>
+                                Updated text:
+                              </p>
+                              <p style={{
+                                fontSize: '12px',
+                                color: '#000000',
+                                margin: 0
+                              }}>
+                                "In one of the most dramatic Monaco Grand Prix..."
+                              </p>
+                            </div>
+                          </div>
+
+                          <div style={{
+                            borderTop: '1px solid #000000',
+                            paddingTop: '16px'
+                          }}>
+                            <a
+                              href="#"
+                              style={{
+                                fontSize: '14px',
+                                color: '#000000',
+                                textDecoration: 'underline',
+                                fontStyle: 'italic'
+                              }}
+                            >
+                              View style guide reference
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    ) : expandedCard === 'grammar-correction' ? (
+                      <div style={{
+                        marginBottom: '24px',
+                        border: '1px solid #000000',
+                        borderRadius: '4px',
+                        backgroundColor: '#FFFFFF'
+                      }}>
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '16px',
+                          borderBottom: '1px solid #000000'
+                        }}>
+                          <h3 style={{
+                            fontSize: '14px',
+                            fontWeight: 600,
+                            color: '#000000',
+                            margin: 0,
+                            fontStyle: 'italic',
+                            letterSpacing: '0.02em'
+                          }}>
+                            Style & Grammar
+                          </h3>
+                          <span style={{
+                            fontSize: '14px',
+                            color: '#000000',
+                            cursor: 'pointer'
+                          }}>
+                            ^
+                          </span>
+                        </div>
+
+                        <div style={{ padding: '16px' }}>
+                          <div style={{ marginBottom: '20px' }}>
+                            <p style={{
+                              fontSize: '14px',
+                              fontWeight: 600,
+                              color: '#000000',
+                              marginBottom: '8px',
+                              fontStyle: 'italic'
+                            }}>
+                              Grammar correction applied:
+                            </p>
+                            <p style={{
+                              fontSize: '14px',
+                              color: '#000000',
+                              marginBottom: '12px'
+                            }}>
+                              Added comma in compound adjective "rain-soaked, incident-filled" for improved readability and clarity.
+                            </p>
+                            <div style={{
+                              backgroundColor: '#FFFFFF',
+                              border: '1px solid #000000',
+                              borderRadius: '4px',
+                              padding: '12px'
+                            }}>
+                              <p style={{
+                                fontSize: '12px',
+                                fontWeight: 600,
+                                color: '#000000',
+                                marginBottom: '4px'
+                              }}>
+                                Original text:
+                              </p>
+                              <p style={{
+                                fontSize: '12px',
+                                color: '#000000',
+                                margin: '0 0 8px 0'
+                              }}>
+                                "...after a rain-soaked and incident-filled race..."
+                              </p>
+                              <p style={{
+                                fontSize: '12px',
+                                fontWeight: 600,
+                                color: '#000000',
+                                marginBottom: '4px'
+                              }}>
+                                Updated text:
+                              </p>
+                              <p style={{
+                                fontSize: '12px',
+                                color: '#000000',
+                                margin: 0
+                              }}>
+                                "...after a rain-soaked, incident-filled race..."
+                              </p>
+                            </div>
+                          </div>
+
+                          <div style={{
+                            borderTop: '1px solid #000000',
+                            paddingTop: '16px'
+                          }}>
+                            <a
+                              href="#"
+                              style={{
+                                fontSize: '14px',
+                                color: '#000000',
+                                textDecoration: 'underline',
+                                fontStyle: 'italic'
+                              }}
+                            >
+                              View grammar guide
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{
+                        marginBottom: '24px',
+                        border: '1px solid #000000',
+                        borderRadius: '4px',
+                        backgroundColor: '#FFFFFF'
+                      }}>
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '16px'
+                        }}>
+                          <h3 style={{
+                            fontSize: '14px',
+                            fontWeight: 600,
+                            color: '#000000',
+                            margin: 0,
+                            fontStyle: 'italic',
+                            letterSpacing: '0.02em'
+                          }}>
+                            Style & Grammar
+                          </h3>
+                          <span style={{
+                            fontSize: '14px',
+                            color: '#000000',
+                            cursor: 'pointer'
+                          }}>
+                            v
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {expandedSection === 'factcheck' ? (
+                      <div style={{
+                        marginBottom: '24px',
+                        border: '1px solid #000000',
+                        borderRadius: '4px',
+                        backgroundColor: '#FFFFFF'
+                      }}>
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '16px',
+                          borderBottom: '1px solid #000000'
+                        }}>
+                          <h3 style={{
+                            fontSize: '14px',
+                            fontWeight: 600,
+                            color: '#000000',
+                            margin: 0,
+                            fontStyle: 'italic',
+                            letterSpacing: '0.02em'
+                          }}>
+                            Fact checking
+                          </h3>
+                          <span style={{
+                            fontSize: '14px',
+                            color: '#000000',
+                            cursor: 'pointer'
+                          }}>
+                            ^
+                          </span>
+                        </div>
+
+                        <div style={{ padding: '16px' }}>
+                          <div style={{ marginBottom: '20px' }}>
+                            <p style={{
+                              fontSize: '14px',
+                              fontWeight: 600,
+                              color: '#000000',
+                              marginBottom: '8px',
+                              fontStyle: 'italic'
+                            }}>
+                              Driver standings verification:
+                            </p>
+                            <p style={{
+                              fontSize: '14px',
+                              color: '#000000',
+                              marginBottom: '12px'
+                            }}>
+                              Luca Moretti is confirmed to be in 5th place in the driver standings with 25 points behind leader Marcus Klein.
+                            </p>
+                            <div style={{
+                              backgroundColor: '#FFFFFF',
+                              border: '1px solid #000000',
+                              borderRadius: '4px',
+                              padding: '12px'
+                            }}>
+                              <p style={{
+                                fontSize: '12px',
+                                fontWeight: 600,
+                                color: '#000000',
+                                marginBottom: '4px'
+                              }}>
+                                Source:
+                              </p>
+                              <p style={{
+                                fontSize: '12px',
+                                color: '#000000',
+                                margin: 0
+                              }}>
+                                Official F1 standings as of May 16, 2010
+                              </p>
+                            </div>
+                          </div>
+
+                          <div style={{ marginBottom: '20px' }}>
+                            <p style={{
+                              fontSize: '14px',
+                              fontWeight: 600,
+                              color: '#000000',
+                              marginBottom: '8px',
+                              fontStyle: 'italic'
+                            }}>
+                              Team information verification:
+                            </p>
+                            <p style={{
+                              fontSize: '14px',
+                              color: '#000000',
+                              marginBottom: '12px'
+                            }}>
+                              Scuderia Veloce is confirmed to be in 3rd place in the Constructors' standings. Team is a newcomer this season.
+                            </p>
+                            <div style={{
+                              backgroundColor: '#FFFFFF',
+                              border: '1px solid #000000',
+                              borderRadius: '4px',
+                              padding: '12px'
+                            }}>
+                              <p style={{
+                                fontSize: '12px',
+                                fontWeight: 600,
+                                color: '#000000',
+                                marginBottom: '4px'
+                              }}>
+                                Source:
+                              </p>
+                              <p style={{
+                                fontSize: '12px',
+                                color: '#000000',
+                                margin: 0
+                              }}>
+                                Official F1 Constructors' Championship standings
+                              </p>
+                            </div>
+                          </div>
+
+                          <div style={{
+                            borderTop: '1px solid #000000',
+                            paddingTop: '16px'
+                          }}>
+                            <a
+                              href="#"
+                              style={{
+                                fontSize: '14px',
+                                color: '#000000',
+                                textDecoration: 'underline',
+                                fontStyle: 'italic'
+                              }}
+                            >
+                              View all fact check sources
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{
+                        marginBottom: '24px',
+                        border: '1px solid #000000',
+                        borderRadius: '4px',
+                        backgroundColor: '#FFFFFF'
+                      }}>
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '16px'
+                        }}>
+                          <h3 style={{
+                            fontSize: '14px',
+                            fontWeight: 600,
+                            color: '#000000',
+                            margin: 0,
+                            fontStyle: 'italic',
+                            letterSpacing: '0.02em'
+                          }}>
+                            Fact checking
+                          </h3>
+                          <span style={{
+                            fontSize: '14px',
+                            color: '#000000',
+                            cursor: 'pointer'
+                          }}>
+                            v
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {expandedSection === 'seo' ? (
+                      <div style={{
+                      marginBottom: '24px',
+                      border: '1px solid #000000',
+                      borderRadius: '4px',
+                      backgroundColor: '#FFFFFF'
+                    }}>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '16px',
+                        borderBottom: '1px solid #000000'
+                      }}>
+                        <h3 style={{
+                          fontSize: '14px',
+                          fontWeight: 600,
+                          color: '#000000',
+                          margin: 0,
+                          fontStyle: 'italic',
+                          letterSpacing: '0.02em'
+                        }}>
+                          SEO & Tags
+                        </h3>
+                        <span style={{
+                          fontSize: '14px',
+                          color: '#000000',
+                          cursor: 'pointer'
+                        }}>
+                          ^
+                        </span>
+                      </div>
+
+                      <div style={{ padding: '16px' }}>
+                        <div style={{ marginBottom: '20px' }}>
+                          <p style={{
+                            fontSize: '14px',
+                            fontWeight: 600,
+                            color: '#000000',
+                            marginBottom: '8px',
+                            fontStyle: 'italic'
+                          }}>
+                            SEO keywords added:
+                          </p>
+                          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                            {['Monaco Grand Prix', 'Formula One', 'Luca Moretti', 'Scuderia Veloce', 'Rookie Victory'].map((tag, i) => (
+                              <span
+                                key={i}
+                                style={{
+                                  backgroundColor: '#FFFFFF',
+                                  color: '#000000',
+                                  fontSize: '12px',
+                                  padding: '6px 12px',
+                                  borderRadius: '4px',
+                                  border: '1px solid #000000'
+                                }}
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div style={{ marginBottom: '20px' }}>
+                          <p style={{
+                            fontSize: '14px',
+                            fontWeight: 600,
+                            color: '#000000',
+                            marginBottom: '8px',
+                            fontStyle: 'italic'
+                          }}>
+                            Tags added:
+                          </p>
+                          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                            {['Motorsport', 'Racing', 'Sports'].map((tag, i) => (
+                              <span
+                                key={i}
+                                style={{
+                                  backgroundColor: '#FFFFFF',
+                                  color: '#000000',
+                                  fontSize: '12px',
+                                  padding: '6px 12px',
+                                  borderRadius: '4px',
+                                  border: '1px solid #000000'
+                                }}
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div style={{ marginBottom: '16px' }}>
+                          <p style={{
+                            fontSize: '14px',
+                            fontWeight: 600,
+                            color: '#000000',
+                            marginBottom: '8px',
+                            fontStyle: 'italic'
+                          }}>
+                            Meta description
+                          </p>
+                          <span style={{
+                            fontSize: '14px',
+                            color: '#000000'
+                          }}>
+                            "Rookie driver Luca Moretti claims maiden F1 victory at Monaco Grand Prix in dramatic rain-soaked race. Championship standings shake-up continues."
+                          </span>
+                        </div>
+
+                        <div style={{
+                          borderTop: '1px solid #000000',
+                          paddingTop: '16px'
+                        }}>
+                          <a
+                            href="#"
+                            style={{
+                              fontSize: '14px',
+                              color: '#000000',
+                              textDecoration: 'underline',
+                              fontStyle: 'italic'
+                            }}
+                          >
+                            View full story in Composer
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                    ) : (
+                      <div style={{
+                        marginBottom: '24px',
+                        border: '1px solid #000000',
+                        borderRadius: '4px',
+                        backgroundColor: '#FFFFFF'
+                      }}>
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '16px'
+                        }}>
+                          <h3 style={{
+                            fontSize: '14px',
+                            fontWeight: 600,
+                            color: '#000000',
+                            margin: 0,
+                            fontStyle: 'italic',
+                            letterSpacing: '0.02em'
+                          }}>
+                            SEO & Tags
+                          </h3>
+                          <span style={{
+                            fontSize: '14px',
+                            color: '#000000',
+                            cursor: 'pointer'
+                          }}>
+                            v
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {expandedCard === 'distribution-facebook' ? (
+                      <div style={{
+                        marginBottom: '24px',
+                        border: '1px solid #000000',
+                        borderRadius: '4px',
+                        backgroundColor: '#FFFFFF'
+                      }}>
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '16px',
+                          borderBottom: '1px solid #000000'
+                        }}>
+                          <h3 style={{
+                            fontSize: '14px',
+                            fontWeight: 600,
+                            color: '#000000',
+                            margin: 0,
+                            fontStyle: 'italic',
+                            letterSpacing: '0.02em'
+                          }}>
+                            Distribution
+                          </h3>
+                          <span style={{
+                            fontSize: '14px',
+                            color: '#000000',
+                            cursor: 'pointer'
+                          }}>
+                            ^
+                          </span>
+                        </div>
+
+                        <div style={{ padding: '16px' }}>
+                          <div style={{ marginBottom: '20px' }}>
+                            <p style={{
+                              fontSize: '14px',
+                              fontWeight: 600,
+                              color: '#000000',
+                              marginBottom: '8px',
+                              fontStyle: 'italic'
+                            }}>
+                              Facebook post preview:
+                            </p>
+                            <div style={{
+                              backgroundColor: '#FFFFFF',
+                              border: '1px solid #000000',
+                              borderRadius: '4px',
+                              padding: '12px',
+                              marginBottom: '12px'
+                            }}>
+                              <p style={{
+                                fontSize: '14px',
+                                fontWeight: 600,
+                                color: '#000000',
+                                marginBottom: '8px'
+                              }}>
+                                Rookie Sensation Stuns Field at Monaco Grand Prix
+                              </p>
+                              <p style={{
+                                fontSize: '12px',
+                                color: '#000000',
+                                margin: 0
+                              }}>
+                                🏎️ Luca Moretti claims his maiden F1 victory in dramatic Monaco race! The Italian rookie held off seasoned veterans in treacherous conditions to take his first-ever Grand Prix win. #F1 #MonacoGP #RookieSensation
+                              </p>
+                            </div>
+                            <p style={{
+                              fontSize: '12px',
+                              color: '#000000',
+                              marginBottom: '8px'
+                            }}>
+                              <strong>Optimizations applied:</strong>
+                            </p>
+                            <ul style={{
+                              fontSize: '12px',
+                              color: '#000000',
+                              margin: 0,
+                              paddingLeft: '20px'
+                            }}>
+                              <li>Character count optimized for engagement (under 150 characters)</li>
+                              <li>Emoji added for visual interest</li>
+                              <li>Hashtags included for discoverability</li>
+                            </ul>
+                          </div>
+
+                          <div style={{
+                            borderTop: '1px solid #000000',
+                            paddingTop: '16px'
+                          }}>
+                            <a
+                              href="#"
+                              style={{
+                                fontSize: '14px',
+                                color: '#000000',
+                                textDecoration: 'underline',
+                                fontStyle: 'italic'
+                              }}
+                            >
+                              Schedule Facebook post
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    ) : expandedCard === 'distribution-newsletter' ? (
+                      <div style={{
+                        marginBottom: '24px',
+                        border: '1px solid #000000',
+                        borderRadius: '4px',
+                        backgroundColor: '#FFFFFF'
+                      }}>
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '16px',
+                          borderBottom: '1px solid #000000'
+                        }}>
+                          <h3 style={{
+                            fontSize: '14px',
+                            fontWeight: 600,
+                            color: '#000000',
+                            margin: 0,
+                            fontStyle: 'italic',
+                            letterSpacing: '0.02em'
+                          }}>
+                            Distribution
+                          </h3>
+                          <span style={{
+                            fontSize: '14px',
+                            color: '#000000',
+                            cursor: 'pointer'
+                          }}>
+                            ^
+                          </span>
+                        </div>
+
+                        <div style={{ padding: '16px' }}>
+                          <div style={{ marginBottom: '20px' }}>
+                            <p style={{
+                              fontSize: '14px',
+                              fontWeight: 600,
+                              color: '#000000',
+                              marginBottom: '8px',
+                              fontStyle: 'italic'
+                            }}>
+                              Newsletter preview:
+                            </p>
+                            <div style={{
+                              backgroundColor: '#FFFFFF',
+                              border: '1px solid #000000',
+                              borderRadius: '4px',
+                              padding: '12px',
+                              marginBottom: '12px'
+                            }}>
+                              <p style={{
+                                fontSize: '14px',
+                                fontWeight: 600,
+                                color: '#000000',
+                                marginBottom: '8px'
+                              }}>
+                                Subject: Rookie Driver Makes F1 History at Monaco
+                              </p>
+                              <p style={{
+                                fontSize: '12px',
+                                color: '#000000',
+                                margin: '0 0 8px 0'
+                              }}>
+                                In a stunning display of skill and composure, rookie driver Luca Moretti secured his maiden Formula One victory at the Monaco Grand Prix. The 24-year-old Italian navigated treacherous wet conditions to claim victory in one of motorsport's most prestigious races.
+                              </p>
+                              <p style={{
+                                fontSize: '12px',
+                                color: '#000000',
+                                margin: 0
+                              }}>
+                                Read the full story →
+                              </p>
+                            </div>
+                            <p style={{
+                              fontSize: '12px',
+                              color: '#000000',
+                              marginBottom: '8px'
+                            }}>
+                              <strong>Optimizations applied:</strong>
+                            </p>
+                            <ul style={{
+                              fontSize: '12px',
+                              color: '#000000',
+                              margin: 0,
+                              paddingLeft: '20px'
+                            }}>
+                              <li>Subject line optimized for open rates</li>
+                              <li>Lead paragraph summarizes key points</li>
+                              <li>Clear call-to-action included</li>
+                            </ul>
+                          </div>
+
+                          <div style={{
+                            borderTop: '1px solid #000000',
+                            paddingTop: '16px'
+                          }}>
+                            <a
+                              href="#"
+                              style={{
+                                fontSize: '14px',
+                                color: '#000000',
+                                textDecoration: 'underline',
+                                fontStyle: 'italic'
+                              }}
+                            >
+                              Add to newsletter queue
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{
+                        marginBottom: '24px',
+                        border: '1px solid #000000',
+                        borderRadius: '4px',
+                        backgroundColor: '#FFFFFF'
+                      }}>
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '16px'
+                        }}>
+                          <h3 style={{
+                            fontSize: '14px',
+                            fontWeight: 600,
+                            color: '#000000',
+                            margin: 0,
+                            fontStyle: 'italic',
+                            letterSpacing: '0.02em'
+                          }}>
+                            Distribution
+                          </h3>
+                          <span style={{
+                            fontSize: '14px',
+                            color: '#000000',
+                            cursor: 'pointer'
+                          }}>
+                            v
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    <div style={{
+                      borderTop: '1px solid #000000',
+                      paddingTop: '16px',
+                      marginTop: 'auto'
+                    }}>
+                      <p style={{
+                        fontSize: '12px',
+                        color: '#000000',
+                        margin: 0,
+                        fontStyle: 'italic'
+                      }}>
+                        Ask Arc or type '/' for actions
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
+          return null;
+        }
+
+        ReactDOM.render(<StoryEditorPrototype />, document.getElementById('root'));
+    </script>
+</body>
+</html>
