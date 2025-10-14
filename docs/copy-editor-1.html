@@ -58,8 +58,8 @@
           };
 
           const handleFactCheckClick = (cardId) => {
-            setExpandedSection('factcheck');
             setExpandedCard(cardId);
+            setExpandedSection('factcheck');
             setView('review');
           };
 
@@ -417,7 +417,14 @@
                         color: '#000000',
                         marginBottom: '20px'
                       }}>
-                        Starting fourth on the grid, Moretti displayed extraordinary control in treacherous conditions, making a daring move past championship leader Marcus Klein on lap 42 to seize the lead. Despite pressure from seasoned veterans in the final laps, the Italian rookie held his nerve to cross the finish line first — earning both his team's and his own first-ever F1 victory.
+                        Starting fourth on the grid, Moretti displayed extraordinary control in treacherous conditions, making a daring move past championship leader Marcus Klein on {expandedCard === 'factcheck-lap' ? (
+                          <span style={{ 
+                            backgroundColor: '#C4E3F3',
+                            padding: '2px 0'
+                          }}>
+                            lap 42
+                          </span>
+                        ) : 'lap 42'} to seize the lead. Despite pressure from seasoned veterans in the final laps, the Italian rookie held his nerve to cross the finish line first — earning both his team's and his own first-ever F1 victory.
                       </p>
 
                       <p style={{
@@ -570,6 +577,39 @@
                       }}>
                         Fact checking
                       </h3>
+                      <div 
+                        onClick={() => handleFactCheckClick('factcheck-lap')}
+                        style={{
+                        border: '1px solid #000000',
+                        borderRadius: '4px',
+                        padding: '12px',
+                        marginBottom: '8px',
+                        backgroundColor: '#FFFFFF',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#F0F0F0';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = '#FFFFFF';
+                        }}
+                      >
+                        <p style={{
+                          fontSize: '14px',
+                          fontWeight: 600,
+                          color: '#000000',
+                          marginBottom: '4px'
+                        }}>
+                          Verify race details
+                        </p>
+                        <span style={{
+                          fontSize: '14px',
+                          color: '#000000'
+                        }}>
+                          Confirm lap number (42) when Moretti overtook Klein for the lead
+                        </span>
+                      </div>
                       <div 
                         onClick={() => handleFactCheckClick('factcheck-driver')}
                         style={{
@@ -881,28 +921,28 @@
                         color: '#000000',
                         marginBottom: '20px'
                       }}>
-                        The win propels Moretti into {expandedSection === 'factcheck' ? (
+                        The win propels Moretti into {expandedCard === 'factcheck-driver' ? (
                           <span style={{ 
                             backgroundColor: '#C4E3F3',
                             padding: '2px 0'
                           }}>
                             fifth place
                           </span>
-                        ) : 'fifth place'} in the driver standings, only {expandedSection === 'factcheck' ? (
+                        ) : 'fifth place'} in the driver standings, only {expandedCard === 'factcheck-driver' ? (
                           <span style={{ 
                             backgroundColor: '#C4E3F3',
                             padding: '2px 0'
                           }}>
                             25 points
                           </span>
-                        ) : '25 points'} behind leader Klein. {expandedSection === 'factcheck' ? (
+                        ) : '25 points'} behind leader Klein. {expandedCard === 'factcheck-team' ? (
                           <span style={{ 
                             backgroundColor: '#C4E3F3',
                             padding: '2px 0'
                           }}>
                             Scuderia Veloce
                           </span>
-                        ) : 'Scuderia Veloce'}, a newcomer team this season, now sits an impressive {expandedSection === 'factcheck' ? (
+                        ) : 'Scuderia Veloce'}, a newcomer team this season, now sits an impressive {expandedCard === 'factcheck-team' ? (
                           <span style={{ 
                             backgroundColor: '#C4E3F3',
                             padding: '2px 0'
@@ -1236,87 +1276,134 @@
                         </div>
 
                         <div style={{ padding: '16px' }}>
-                          <div style={{ marginBottom: '20px' }}>
-                            <p style={{
-                              fontSize: '14px',
-                              fontWeight: 600,
-                              color: '#000000',
-                              marginBottom: '8px',
-                              fontStyle: 'italic'
-                            }}>
-                              Driver standings verification:
-                            </p>
-                            <p style={{
-                              fontSize: '14px',
-                              color: '#000000',
-                              marginBottom: '12px'
-                            }}>
-                              Luca Moretti is confirmed to be in 5th place in the driver standings with 25 points behind leader Marcus Klein.
-                            </p>
-                            <div style={{
-                              backgroundColor: '#FFFFFF',
-                              border: '1px solid #000000',
-                              borderRadius: '4px',
-                              padding: '12px'
-                            }}>
+                          {expandedCard === 'factcheck-lap' && (
+                            <div style={{ marginBottom: '20px' }}>
                               <p style={{
-                                fontSize: '12px',
+                                fontSize: '14px',
                                 fontWeight: 600,
                                 color: '#000000',
-                                marginBottom: '4px'
+                                marginBottom: '8px',
+                                fontStyle: 'italic'
                               }}>
-                                Source:
+                                Race details verification:
                               </p>
                               <p style={{
-                                fontSize: '12px',
+                                fontSize: '14px',
                                 color: '#000000',
-                                margin: 0
+                                marginBottom: '12px'
                               }}>
-                                Official F1 standings as of May 16, 2010
+                                Confirmed that Moretti overtook Klein on lap 42 of the Monaco Grand Prix.
                               </p>
+                              <div style={{
+                                backgroundColor: '#FFFFFF',
+                                border: '1px solid #000000',
+                                borderRadius: '4px',
+                                padding: '12px'
+                              }}>
+                                <p style={{
+                                  fontSize: '12px',
+                                  fontWeight: 600,
+                                  color: '#000000',
+                                  marginBottom: '4px'
+                                }}>
+                                  Source:
+                                </p>
+                                <p style={{
+                                  fontSize: '12px',
+                                  color: '#000000',
+                                  margin: 0
+                                }}>
+                                  Official F1 race timing and lap-by-lap data from Monaco GP
+                                </p>
+                              </div>
                             </div>
-                          </div>
+                          )}
+                          
+                          {expandedCard === 'factcheck-driver' && (
+                            <div style={{ marginBottom: '20px' }}>
+                              <p style={{
+                                fontSize: '14px',
+                                fontWeight: 600,
+                                color: '#000000',
+                                marginBottom: '8px',
+                                fontStyle: 'italic'
+                              }}>
+                                Driver standings verification:
+                              </p>
+                              <p style={{
+                                fontSize: '14px',
+                                color: '#000000',
+                                marginBottom: '12px'
+                              }}>
+                                Luca Moretti is confirmed to be in 5th place in the driver standings with 25 points behind leader Marcus Klein.
+                              </p>
+                              <div style={{
+                                backgroundColor: '#FFFFFF',
+                                border: '1px solid #000000',
+                                borderRadius: '4px',
+                                padding: '12px'
+                              }}>
+                                <p style={{
+                                  fontSize: '12px',
+                                  fontWeight: 600,
+                                  color: '#000000',
+                                  marginBottom: '4px'
+                                }}>
+                                  Source:
+                                </p>
+                                <p style={{
+                                  fontSize: '12px',
+                                  color: '#000000',
+                                  margin: 0
+                                }}>
+                                  Official F1 standings as of May 16, 2010
+                                </p>
+                              </div>
+                            </div>
+                          )}
 
-                          <div style={{ marginBottom: '20px' }}>
-                            <p style={{
-                              fontSize: '14px',
-                              fontWeight: 600,
-                              color: '#000000',
-                              marginBottom: '8px',
-                              fontStyle: 'italic'
-                            }}>
-                              Team information verification:
-                            </p>
-                            <p style={{
-                              fontSize: '14px',
-                              color: '#000000',
-                              marginBottom: '12px'
-                            }}>
-                              Scuderia Veloce is confirmed to be in 3rd place in the Constructors' standings. Team is a newcomer this season.
-                            </p>
-                            <div style={{
-                              backgroundColor: '#FFFFFF',
-                              border: '1px solid #000000',
-                              borderRadius: '4px',
-                              padding: '12px'
-                            }}>
+                          {expandedCard === 'factcheck-team' && (
+                            <div style={{ marginBottom: '20px' }}>
                               <p style={{
-                                fontSize: '12px',
+                                fontSize: '14px',
                                 fontWeight: 600,
                                 color: '#000000',
-                                marginBottom: '4px'
+                                marginBottom: '8px',
+                                fontStyle: 'italic'
                               }}>
-                                Source:
+                                Team information verification:
                               </p>
                               <p style={{
-                                fontSize: '12px',
+                                fontSize: '14px',
                                 color: '#000000',
-                                margin: 0
+                                marginBottom: '12px'
                               }}>
-                                Official F1 Constructors' Championship standings
+                                Scuderia Veloce is confirmed to be in 3rd place in the Constructors' standings. Team is a newcomer this season.
                               </p>
+                              <div style={{
+                                backgroundColor: '#FFFFFF',
+                                border: '1px solid #000000',
+                                borderRadius: '4px',
+                                padding: '12px'
+                              }}>
+                                <p style={{
+                                  fontSize: '12px',
+                                  fontWeight: 600,
+                                  color: '#000000',
+                                  marginBottom: '4px'
+                                }}>
+                                  Source:
+                                </p>
+                                <p style={{
+                                  fontSize: '12px',
+                                  color: '#000000',
+                                  margin: 0
+                                }}>
+                                  Official F1 Constructors' Championship standings
+                                </p>
+                              </div>
                             </div>
-                          </div>
+                          )}
 
                           <div style={{
                             borderTop: '1px solid #000000',
