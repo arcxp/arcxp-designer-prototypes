@@ -1743,6 +1743,7 @@
       wrapper.style.maxWidth = '1000px';
       wrapper.style.margin = '0 auto';
       
+      // Basic Information Section
       var basicSection = document.createElement('div');
       basicSection.className = 'detail-section';
       
@@ -1762,28 +1763,42 @@
       var statusLabel = document.createElement('label');
       statusLabel.className = 'detail-field-label';
       statusLabel.textContent = 'Status';
-      var statusInput = document.createElement('input');
-      statusInput.type = 'text';
-      statusInput.className = 'detail-field-input';
-      statusInput.value = event.status;
-      statusInput.readOnly = true;
-      statusInput.style.backgroundColor = '#F8FAFD';
+      var statusSelect = document.createElement('select');
+      statusSelect.className = 'detail-field-input';
+      var opt1 = document.createElement('option');
+      opt1.value = 'DRAFT';
+      opt1.textContent = 'Draft';
+      var opt2 = document.createElement('option');
+      opt2.value = 'PUBLISHED';
+      opt2.textContent = 'Published';
+      statusSelect.appendChild(opt1);
+      statusSelect.appendChild(opt2);
+      statusSelect.value = event.status;
       statusField.appendChild(statusLabel);
-      statusField.appendChild(statusInput);
+      statusField.appendChild(statusSelect);
       
       var langField = document.createElement('div');
       langField.className = 'detail-field';
       var langLabel = document.createElement('label');
       langLabel.className = 'detail-field-label';
       langLabel.textContent = 'Language';
-      var langInput = document.createElement('input');
-      langInput.type = 'text';
-      langInput.className = 'detail-field-input';
-      langInput.value = 'English';
-      langInput.readOnly = true;
-      langInput.style.backgroundColor = '#F8FAFD';
+      var langSelect = document.createElement('select');
+      langSelect.className = 'detail-field-input';
+      var optEn = document.createElement('option');
+      optEn.value = 'English';
+      optEn.textContent = 'English';
+      var optEs = document.createElement('option');
+      optEs.value = 'Spanish';
+      optEs.textContent = 'Spanish';
+      var optFr = document.createElement('option');
+      optFr.value = 'French';
+      optFr.textContent = 'French';
+      langSelect.appendChild(optEn);
+      langSelect.appendChild(optEs);
+      langSelect.appendChild(optFr);
+      langSelect.value = 'English';
       langField.appendChild(langLabel);
-      langField.appendChild(langInput);
+      langField.appendChild(langSelect);
       
       grid1.appendChild(statusField);
       grid1.appendChild(langField);
@@ -1798,11 +1813,126 @@
       nameInput.type = 'text';
       nameInput.className = 'detail-field-input';
       nameInput.value = event.title;
-      nameInput.readOnly = true;
-      nameInput.style.backgroundColor = '#F8FAFD';
       nameField.appendChild(nameLabel);
       nameField.appendChild(nameInput);
       basicSection.appendChild(nameField);
+      
+      var slugField = document.createElement('div');
+      slugField.className = 'detail-field';
+      var slugLabel = document.createElement('label');
+      slugLabel.className = 'detail-field-label';
+      slugLabel.textContent = 'Slug (Unique)';
+      var slugInput = document.createElement('input');
+      slugInput.type = 'text';
+      slugInput.className = 'detail-field-input';
+      slugInput.value = event.title.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+      slugField.appendChild(slugLabel);
+      slugField.appendChild(slugInput);
+      var slugHelper = document.createElement('div');
+      slugHelper.style.fontSize = '14px';
+      slugHelper.style.color = '#656A86';
+      slugHelper.style.marginTop = '8px';
+      slugHelper.style.fontWeight = '400';
+      slugHelper.textContent = 'URL-friendly identifier used for routing and references';
+      slugField.appendChild(slugHelper);
+      basicSection.appendChild(slugField);
+      
+      var idField = document.createElement('div');
+      idField.className = 'detail-field';
+      var idLabel = document.createElement('label');
+      idLabel.className = 'detail-field-label';
+      idLabel.textContent = 'ID';
+      var idInput = document.createElement('input');
+      idInput.type = 'text';
+      idInput.className = 'detail-field-input';
+      idInput.value = '109391';
+      idInput.readOnly = true;
+      idInput.style.backgroundColor = '#F8FAFD';
+      idInput.style.cursor = 'not-allowed';
+      idField.appendChild(idLabel);
+      idField.appendChild(idInput);
+      var idHelper = document.createElement('div');
+      idHelper.style.fontSize = '14px';
+      idHelper.style.color = '#656A86';
+      idHelper.style.marginTop = '8px';
+      idHelper.style.fontWeight = '400';
+      idHelper.textContent = 'Unique numeric identifier assigned by the system';
+      idField.appendChild(idHelper);
+      basicSection.appendChild(idField);
+      
+      wrapper.appendChild(basicSection);
+      
+      // Schema & Version Section
+      var schemaSection = document.createElement('div');
+      schemaSection.className = 'detail-section';
+      
+      var schemaTitle = document.createElement('h2');
+      schemaTitle.className = 'detail-section-title';
+      schemaTitle.textContent = 'Schema & Version';
+      schemaSection.appendChild(schemaTitle);
+      
+      var grid2 = document.createElement('div');
+      grid2.style.display = 'grid';
+      grid2.style.gridTemplateColumns = '1fr 1fr';
+      grid2.style.gap = '24px';
+      
+      var schemaIdField = document.createElement('div');
+      schemaIdField.className = 'detail-field';
+      var schemaIdLabel = document.createElement('label');
+      schemaIdLabel.className = 'detail-field-label';
+      schemaIdLabel.textContent = 'Schema ID';
+      var schemaIdInput = document.createElement('input');
+      schemaIdInput.type = 'text';
+      schemaIdInput.className = 'detail-field-input';
+      schemaIdInput.value = 'event';
+      schemaIdInput.readOnly = true;
+      schemaIdInput.style.backgroundColor = '#F8FAFD';
+      schemaIdInput.style.cursor = 'not-allowed';
+      schemaIdField.appendChild(schemaIdLabel);
+      schemaIdField.appendChild(schemaIdInput);
+      var schemaIdHelper = document.createElement('div');
+      schemaIdHelper.style.fontSize = '14px';
+      schemaIdHelper.style.color = '#656A86';
+      schemaIdHelper.style.marginTop = '8px';
+      schemaIdHelper.style.fontWeight = '400';
+      schemaIdHelper.textContent = 'Content type schema identifier';
+      schemaIdField.appendChild(schemaIdHelper);
+      
+      var schemaVerField = document.createElement('div');
+      schemaVerField.className = 'detail-field';
+      var schemaVerLabel = document.createElement('label');
+      schemaVerLabel.className = 'detail-field-label';
+      schemaVerLabel.textContent = 'Schema Version';
+      var schemaVerInput = document.createElement('input');
+      schemaVerInput.type = 'text';
+      schemaVerInput.className = 'detail-field-input';
+      schemaVerInput.value = '1.0.2';
+      schemaVerInput.readOnly = true;
+      schemaVerInput.style.backgroundColor = '#F8FAFD';
+      schemaVerInput.style.cursor = 'not-allowed';
+      schemaVerField.appendChild(schemaVerLabel);
+      schemaVerField.appendChild(schemaVerInput);
+      var schemaVerHelper = document.createElement('div');
+      schemaVerHelper.style.fontSize = '14px';
+      schemaVerHelper.style.color = '#656A86';
+      schemaVerHelper.style.marginTop = '8px';
+      schemaVerHelper.style.fontWeight = '400';
+      schemaVerHelper.textContent = 'Current schema version for compatibility';
+      schemaVerField.appendChild(schemaVerHelper);
+      
+      grid2.appendChild(schemaIdField);
+      grid2.appendChild(schemaVerField);
+      schemaSection.appendChild(grid2);
+      wrapper.appendChild(schemaSection);
+      
+      // Event Details Section
+      var eventSection = document.createElement('div');
+      eventSection.className = 'detail-section';
+      
+      var eventTitle = document.createElement('h2');
+      eventTitle.className = 'detail-section-title';
+      eventTitle.textContent = 'Event Details';
+      eventSection.appendChild(eventTitle);
       
       var catField = document.createElement('div');
       catField.className = 'detail-field';
@@ -1813,78 +1943,432 @@
       catInput.type = 'text';
       catInput.className = 'detail-field-input';
       catInput.value = event.category;
-      catInput.readOnly = true;
-      catInput.style.backgroundColor = '#F8FAFD';
       catField.appendChild(catLabel);
       catField.appendChild(catInput);
-      basicSection.appendChild(catField);
+      eventSection.appendChild(catField);
       
-      wrapper.appendChild(basicSection);
+      var descField = document.createElement('div');
+      descField.className = 'detail-field';
+      var descLabel = document.createElement('label');
+      descLabel.className = 'detail-field-label';
+      descLabel.textContent = 'Description';
+      var descTextarea = document.createElement('textarea');
+      descTextarea.className = 'detail-field-textarea';
+      descTextarea.placeholder = 'Short description with no formatting';
+      descTextarea.value = 'Details about ' + event.title;
+      descField.appendChild(descLabel);
+      descField.appendChild(descTextarea);
+      eventSection.appendChild(descField);
       
-      var metaSection = document.createElement('div');
-      metaSection.className = 'detail-section';
+      var grid3 = document.createElement('div');
+      grid3.style.display = 'grid';
+      grid3.style.gridTemplateColumns = '1fr 1fr';
+      grid3.style.gap = '24px';
+      grid3.style.marginBottom = '24px';
       
-      var metaTitle = document.createElement('h2');
-      metaTitle.className = 'detail-section-title';
-      metaTitle.textContent = 'Metadata';
-      metaSection.appendChild(metaTitle);
+      var sourceField = document.createElement('div');
+      sourceField.className = 'detail-field';
+      var sourceLabel = document.createElement('label');
+      sourceLabel.className = 'detail-field-label';
+      sourceLabel.textContent = 'Source';
+      var sourceSelect = document.createElement('select');
+      sourceSelect.className = 'detail-field-input';
+      var optEb = document.createElement('option');
+      optEb.value = 'Eventbrite';
+      optEb.textContent = 'Eventbrite';
+      var optMan = document.createElement('option');
+      optMan.value = 'Manual';
+      optMan.textContent = 'Manual';
+      var optImp = document.createElement('option');
+      optImp.value = 'Import';
+      optImp.textContent = 'Import';
+      sourceSelect.appendChild(optEb);
+      sourceSelect.appendChild(optMan);
+      sourceSelect.appendChild(optImp);
+      sourceSelect.value = event.hasEventbrite ? 'Eventbrite' : 'Manual';
+      sourceField.appendChild(sourceLabel);
+      sourceField.appendChild(sourceSelect);
       
-      var grid2 = document.createElement('div');
-      grid2.style.display = 'grid';
-      grid2.style.gridTemplateColumns = '1fr 1fr';
-      grid2.style.gap = '24px';
+      var eventStatusField = document.createElement('div');
+      eventStatusField.className = 'detail-field';
+      var eventStatusLabel = document.createElement('label');
+      eventStatusLabel.className = 'detail-field-label';
+      eventStatusLabel.textContent = 'Event Status';
+      var eventStatusSelect = document.createElement('select');
+      eventStatusSelect.className = 'detail-field-input';
+      var optConf = document.createElement('option');
+      optConf.value = 'Confirmed';
+      optConf.textContent = 'Confirmed';
+      var optTent = document.createElement('option');
+      optTent.value = 'Tentative';
+      optTent.textContent = 'Tentative';
+      var optCanc = document.createElement('option');
+      optCanc.value = 'Cancelled';
+      optCanc.textContent = 'Cancelled';
+      eventStatusSelect.appendChild(optConf);
+      eventStatusSelect.appendChild(optTent);
+      eventStatusSelect.appendChild(optCanc);
+      eventStatusSelect.value = 'Confirmed';
+      eventStatusField.appendChild(eventStatusLabel);
+      eventStatusField.appendChild(eventStatusSelect);
+      
+      grid3.appendChild(sourceField);
+      grid3.appendChild(eventStatusField);
+      eventSection.appendChild(grid3);
+      
+      var grid4 = document.createElement('div');
+      grid4.style.display = 'grid';
+      grid4.style.gridTemplateColumns = '1fr 1fr';
+      grid4.style.gap = '24px';
+      
+      var prioField = document.createElement('div');
+      prioField.className = 'detail-field';
+      var prioLabel = document.createElement('label');
+      prioLabel.className = 'detail-field-label';
+      prioLabel.textContent = 'Priority';
+      var prioInput = document.createElement('input');
+      prioInput.type = 'text';
+      prioInput.className = 'detail-field-input';
+      prioInput.value = '1';
+      prioField.appendChild(prioLabel);
+      prioField.appendChild(prioInput);
+      
+      var priceField = document.createElement('div');
+      priceField.className = 'detail-field';
+      var priceLabel = document.createElement('label');
+      priceLabel.className = 'detail-field-label';
+      priceLabel.textContent = 'Price';
+      var priceInput = document.createElement('input');
+      priceInput.type = 'text';
+      priceInput.className = 'detail-field-input';
+      priceInput.value = 'free';
+      priceField.appendChild(priceLabel);
+      priceField.appendChild(priceInput);
+      
+      grid4.appendChild(prioField);
+      grid4.appendChild(priceField);
+      eventSection.appendChild(grid4);
+      
+      var allDayField = document.createElement('div');
+      allDayField.className = 'detail-field';
+      var allDayLabel = document.createElement('label');
+      allDayLabel.style.display = 'flex';
+      allDayLabel.style.alignItems = 'center';
+      allDayLabel.style.gap = '8px';
+      allDayLabel.style.cursor = 'pointer';
+      allDayLabel.style.fontSize = '16px';
+      allDayLabel.style.fontWeight = '500';
+      allDayLabel.style.color = '#191B34';
+      var allDayCheck = document.createElement('input');
+      allDayCheck.type = 'checkbox';
+      allDayCheck.style.width = '20px';
+      allDayCheck.style.height = '20px';
+      allDayCheck.style.cursor = 'pointer';
+      allDayCheck.style.accentColor = '#1F3CD0';
+      allDayLabel.appendChild(allDayCheck);
+      allDayLabel.appendChild(document.createTextNode('All Day Event'));
+      allDayField.appendChild(allDayLabel);
+      eventSection.appendChild(allDayField);
+      
+      wrapper.appendChild(eventSection);
+      
+      // Featured Image Section
+      var imageSection = document.createElement('div');
+      imageSection.className = 'detail-section';
+      
+      var imageTitle = document.createElement('h2');
+      imageTitle.className = 'detail-section-title';
+      imageTitle.textContent = 'Featured Image';
+      imageSection.appendChild(imageTitle);
+      
+      var imageBox = document.createElement('div');
+      imageBox.style.border = '2px dashed #BEC2D5';
+      imageBox.style.borderRadius = '4px';
+      imageBox.style.padding = '48px';
+      imageBox.style.textAlign = 'center';
+      imageBox.style.backgroundColor = '#FFFFFF';
+      
+      var imageContent = document.createElement('div');
+      imageContent.style.display = 'flex';
+      imageContent.style.flexDirection = 'column';
+      imageContent.style.alignItems = 'center';
+      imageContent.style.gap = '24px';
+      
+      imageContent.innerHTML = '<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#656A86" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+      
+      var noImageText = document.createElement('div');
+      noImageText.style.fontSize = '16px';
+      noImageText.style.color = '#656A86';
+      noImageText.style.fontWeight = '500';
+      noImageText.textContent = 'No image selected';
+      imageContent.appendChild(noImageText);
+      
+      var browseBtn = document.createElement('button');
+      browseBtn.className = 'btn';
+      browseBtn.style.backgroundColor = '#FFFFFF';
+      browseBtn.style.border = '2px solid #20A453';
+      browseBtn.style.color = '#20A453';
+      browseBtn.style.fontWeight = '500';
+      browseBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Browse PhotoCenter';
+      browseBtn.onmouseover = function() { this.style.backgroundColor = '#D2FAD2'; };
+      browseBtn.onmouseout = function() { this.style.backgroundColor = '#FFFFFF'; };
+      imageContent.appendChild(browseBtn);
+      
+      imageBox.appendChild(imageContent);
+      imageSection.appendChild(imageBox);
+      wrapper.appendChild(imageSection);
+      
+      // Organizer Information Section
+      var orgSection = document.createElement('div');
+      orgSection.className = 'detail-section';
+      
+      var orgTitle = document.createElement('h2');
+      orgTitle.className = 'detail-section-title';
+      orgTitle.textContent = 'Organizer Information';
+      orgSection.appendChild(orgTitle);
+      
+      var orgNameField = document.createElement('div');
+      orgNameField.className = 'detail-field';
+      var orgNameLabel = document.createElement('label');
+      orgNameLabel.className = 'detail-field-label';
+      orgNameLabel.textContent = 'Organizer Name';
+      var orgNameInput = document.createElement('input');
+      orgNameInput.type = 'text';
+      orgNameInput.className = 'detail-field-input';
+      orgNameInput.value = 'Running Club NYC';
+      orgNameField.appendChild(orgNameLabel);
+      orgNameField.appendChild(orgNameInput);
+      orgSection.appendChild(orgNameField);
+      
+      var grid5 = document.createElement('div');
+      grid5.style.display = 'grid';
+      grid5.style.gridTemplateColumns = '1fr 1fr';
+      grid5.style.gap = '24px';
+      
+      var emailField = document.createElement('div');
+      emailField.className = 'detail-field';
+      var emailLabel = document.createElement('label');
+      emailLabel.className = 'detail-field-label';
+      emailLabel.textContent = 'Email';
+      var emailInput = document.createElement('input');
+      emailInput.type = 'email';
+      emailInput.className = 'detail-field-input';
+      emailInput.placeholder = 'Enter email';
+      emailField.appendChild(emailLabel);
+      emailField.appendChild(emailInput);
+      
+      var urlField = document.createElement('div');
+      urlField.className = 'detail-field';
+      var urlLabel = document.createElement('label');
+      urlLabel.className = 'detail-field-label';
+      urlLabel.textContent = 'Website URL';
+      var urlInput = document.createElement('input');
+      urlInput.type = 'url';
+      urlInput.className = 'detail-field-input';
+      urlInput.placeholder = 'Enter website URL';
+      urlField.appendChild(urlLabel);
+      urlField.appendChild(urlInput);
+      
+      grid5.appendChild(emailField);
+      grid5.appendChild(urlField);
+      orgSection.appendChild(grid5);
+      wrapper.appendChild(orgSection);
+      
+      // Event Dates & Times Section
+      var datesSection = document.createElement('div');
+      datesSection.className = 'detail-section';
+      
+      var datesHeader = document.createElement('div');
+      datesHeader.style.display = 'flex';
+      datesHeader.style.justifyContent = 'space-between';
+      datesHeader.style.alignItems = 'center';
+      datesHeader.style.marginBottom = '24px';
+      
+      var datesTitle = document.createElement('h2');
+      datesTitle.className = 'detail-section-title';
+      datesTitle.style.marginBottom = '0';
+      datesTitle.textContent = 'Event Dates & Times';
+      datesHeader.appendChild(datesTitle);
+      
+      var addEventBtn = document.createElement('button');
+      addEventBtn.className = 'btn btn-neutral';
+      addEventBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Event';
+      datesHeader.appendChild(addEventBtn);
+      
+      datesSection.appendChild(datesHeader);
+      
+      var eventCard = document.createElement('div');
+      eventCard.style.border = '1px solid #E0E3EE';
+      eventCard.style.borderRadius = '4px';
+      eventCard.style.padding = '24px';
+      eventCard.style.backgroundColor = '#FFFFFF';
+      
+      var event1Title = document.createElement('div');
+      event1Title.style.fontSize = '16px';
+      event1Title.style.fontWeight = '600';
+      event1Title.style.color = '#191B34';
+      event1Title.style.marginBottom = '16px';
+      event1Title.textContent = 'Event 1';
+      eventCard.appendChild(event1Title);
+      
+      var grid6 = document.createElement('div');
+      grid6.style.display = 'grid';
+      grid6.style.gridTemplateColumns = '1fr 1fr';
+      grid6.style.gap = '24px';
+      
+      var startField = document.createElement('div');
+      startField.className = 'detail-field';
+      var startLabel = document.createElement('label');
+      startLabel.className = 'detail-field-label';
+      startLabel.textContent = 'Start Date & Time';
+      var startInput = document.createElement('input');
+      startInput.type = 'text';
+      startInput.className = 'detail-field-input';
+      startInput.value = '06/15/2025, 09:00';
+      startField.appendChild(startLabel);
+      startField.appendChild(startInput);
+      
+      var endField = document.createElement('div');
+      endField.className = 'detail-field';
+      var endLabel = document.createElement('label');
+      endLabel.className = 'detail-field-label';
+      endLabel.textContent = 'End Date & Time';
+      var endInput = document.createElement('input');
+      endInput.type = 'text';
+      endInput.className = 'detail-field-input';
+      endInput.value = '06/15/2025, 05:00';
+      endField.appendChild(endLabel);
+      endField.appendChild(endInput);
+      
+      grid6.appendChild(startField);
+      grid6.appendChild(endField);
+      eventCard.appendChild(grid6);
+      datesSection.appendChild(eventCard);
+      wrapper.appendChild(datesSection);
+      
+      // Location & Links Section
+      var locSection = document.createElement('div');
+      locSection.className = 'detail-section';
+      
+      var locTitle = document.createElement('h2');
+      locTitle.className = 'detail-section-title';
+      locTitle.textContent = 'Location & Links';
+      locSection.appendChild(locTitle);
+      
+      var locationField = document.createElement('div');
+      locationField.className = 'detail-field';
+      var locationLabel = document.createElement('label');
+      locationLabel.className = 'detail-field-label';
+      locationLabel.textContent = 'Location';
+      var locationInput = document.createElement('input');
+      locationInput.type = 'text';
+      locationInput.className = 'detail-field-input';
+      locationInput.value = 'Central Park, NYC';
+      locationField.appendChild(locationLabel);
+      locationField.appendChild(locationInput);
+      locSection.appendChild(locationField);
+      
+      var eventUrlField = document.createElement('div');
+      eventUrlField.className = 'detail-field';
+      var eventUrlLabel = document.createElement('label');
+      eventUrlLabel.className = 'detail-field-label';
+      eventUrlLabel.textContent = 'Event URL';
+      var eventUrlInput = document.createElement('input');
+      eventUrlInput.type = 'url';
+      eventUrlInput.className = 'detail-field-input';
+      eventUrlInput.value = 'https://example.com/event';
+      eventUrlField.appendChild(eventUrlLabel);
+      eventUrlField.appendChild(eventUrlInput);
+      locSection.appendChild(eventUrlField);
+      wrapper.appendChild(locSection);
+      
+      // System Information Section
+      var sysSection = document.createElement('div');
+      sysSection.className = 'detail-section';
+      
+      var sysTitle = document.createElement('h2');
+      sysTitle.className = 'detail-section-title';
+      sysTitle.textContent = 'System Information';
+      sysSection.appendChild(sysTitle);
+      
+      var grid7 = document.createElement('div');
+      grid7.style.display = 'grid';
+      grid7.style.gridTemplateColumns = '1fr 1fr';
+      grid7.style.gap = '24px';
+      
+      var revField = document.createElement('div');
+      revField.className = 'detail-field';
+      var revLabel = document.createElement('label');
+      revLabel.className = 'detail-field-label';
+      revLabel.textContent = 'Revision';
+      var revInput = document.createElement('input');
+      revInput.type = 'text';
+      revInput.className = 'detail-field-input';
+      revInput.value = '1';
+      revInput.readOnly = true;
+      revInput.style.backgroundColor = '#F8FAFD';
+      revInput.style.cursor = 'not-allowed';
+      revField.appendChild(revLabel);
+      revField.appendChild(revInput);
       
       var authorField = document.createElement('div');
       authorField.className = 'detail-field';
       var authorLabel = document.createElement('label');
       authorLabel.className = 'detail-field-label';
       authorLabel.textContent = 'Author';
-      var authorValue = document.createElement('div');
-      authorValue.className = 'detail-field-value';
-      authorValue.textContent = event.author;
+      var authorInput = document.createElement('input');
+      authorInput.type = 'text';
+      authorInput.className = 'detail-field-input';
+      authorInput.value = event.author;
+      authorInput.readOnly = true;
+      authorInput.style.backgroundColor = '#F8FAFD';
+      authorInput.style.cursor = 'not-allowed';
       authorField.appendChild(authorLabel);
-      authorField.appendChild(authorValue);
+      authorField.appendChild(authorInput);
+      
+      grid7.appendChild(revField);
+      grid7.appendChild(authorField);
+      sysSection.appendChild(grid7);
+      
+      var grid8 = document.createElement('div');
+      grid8.style.display = 'grid';
+      grid8.style.gridTemplateColumns = '1fr 1fr';
+      grid8.style.gap = '24px';
+      
+      var createField = document.createElement('div');
+      createField.className = 'detail-field';
+      var createLabel = document.createElement('label');
+      createLabel.className = 'detail-field-label';
+      createLabel.textContent = 'Create Date';
+      var createInput = document.createElement('input');
+      createInput.type = 'text';
+      createInput.className = 'detail-field-input';
+      createInput.value = '11/11/2025, 07:09 PM';
+      createInput.readOnly = true;
+      createInput.style.backgroundColor = '#F8FAFD';
+      createInput.style.cursor = 'not-allowed';
+      createField.appendChild(createLabel);
+      createField.appendChild(createInput);
       
       var modField = document.createElement('div');
       modField.className = 'detail-field';
       var modLabel = document.createElement('label');
       modLabel.className = 'detail-field-label';
       modLabel.textContent = 'Last Modified';
-      var modValue = document.createElement('div');
-      modValue.className = 'detail-field-value';
-      modValue.textContent = event.lastModified;
+      var modInput = document.createElement('input');
+      modInput.type = 'text';
+      modInput.className = 'detail-field-input';
+      modInput.value = event.lastModified;
+      modInput.readOnly = true;
+      modInput.style.backgroundColor = '#F8FAFD';
+      modInput.style.cursor = 'not-allowed';
       modField.appendChild(modLabel);
-      modField.appendChild(modValue);
+      modField.appendChild(modInput);
       
-      var pubField = document.createElement('div');
-      pubField.className = 'detail-field';
-      var pubLabel = document.createElement('label');
-      pubLabel.className = 'detail-field-label';
-      pubLabel.textContent = 'Published Date';
-      var pubValue = document.createElement('div');
-      pubValue.className = 'detail-field-value';
-      pubValue.textContent = event.published;
-      pubField.appendChild(pubLabel);
-      pubField.appendChild(pubValue);
-      
-      var ebField = document.createElement('div');
-      ebField.className = 'detail-field';
-      var ebLabel = document.createElement('label');
-      ebLabel.className = 'detail-field-label';
-      ebLabel.textContent = 'Eventbrite Integration';
-      var ebValue = document.createElement('div');
-      ebValue.className = 'detail-field-value';
-      ebValue.textContent = event.hasEventbrite ? 'Connected' : 'Not connected';
-      ebField.appendChild(ebLabel);
-      ebField.appendChild(ebValue);
-      
-      grid2.appendChild(authorField);
-      grid2.appendChild(modField);
-      grid2.appendChild(pubField);
-      grid2.appendChild(ebField);
-      
-      metaSection.appendChild(grid2);
-      wrapper.appendChild(metaSection);
+      grid8.appendChild(createField);
+      grid8.appendChild(modField);
+      sysSection.appendChild(grid8);
+      wrapper.appendChild(sysSection);
       
       content.appendChild(wrapper);
       modal.classList.add('visible');
