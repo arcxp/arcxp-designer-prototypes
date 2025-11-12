@@ -206,6 +206,17 @@
       background-color: #0A5F44;
     }
     
+    .btn-secondary {
+      background-color: #FFFFFF;
+      color: #191B34;
+      border: 1px solid #BEC2D5;
+    }
+    
+    .btn-secondary:hover {
+      background-color: #EFF1F6;
+      border-color: #656A86;
+    }
+    
     .tabs-container {
       background-color: #FFFFFF;
       padding: 0 24px;
@@ -521,6 +532,58 @@
       font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       line-height: 120%;
       letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: all 200ms ease;
+      position: relative;
+    }
+    
+    .event-placeholder:hover {
+      background-color: #E0E3EE;
+      border-color: #656A86;
+    }
+    
+    .event-placeholder.selected {
+      border-color: #1F3CD0;
+      border-width: 2px;
+    }
+    
+    .placeholder-flyout {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background-color: #FFFFFF;
+      border: 1px solid #E0E3EE;
+      border-radius: 4px;
+      padding: 4px;
+      display: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+    }
+    
+    .placeholder-flyout.visible {
+      display: block;
+    }
+    
+    .flyout-button {
+      background: none;
+      border: none;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: #191B34;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      border-radius: 4px;
+      transition: all 200ms ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    
+    .flyout-button:hover {
+      background-color: #EFF1F6;
+      color: #1F3CD0;
     }
     
     .modal-overlay {
@@ -679,41 +742,6 @@
       letter-spacing: 0.02em;
     }
     
-    /* Scrollbar styling */
-    .left-sidebar::-webkit-scrollbar,
-    .editor-area::-webkit-scrollbar,
-    .event-list::-webkit-scrollbar,
-    .modal-sidebar::-webkit-scrollbar,
-    .detail-content::-webkit-scrollbar {
-      width: 8px;
-    }
-    
-    .left-sidebar::-webkit-scrollbar-track,
-    .editor-area::-webkit-scrollbar-track,
-    .event-list::-webkit-scrollbar-track,
-    .modal-sidebar::-webkit-scrollbar-track,
-    .detail-content::-webkit-scrollbar-track {
-      background: #F8FAFD;
-    }
-    
-    .left-sidebar::-webkit-scrollbar-thumb,
-    .editor-area::-webkit-scrollbar-thumb,
-    .event-list::-webkit-scrollbar-thumb,
-    .modal-sidebar::-webkit-scrollbar-thumb,
-    .detail-content::-webkit-scrollbar-thumb {
-      background: #BEC2D5;
-      border-radius: 4px;
-    }
-    
-    .left-sidebar::-webkit-scrollbar-thumb:hover,
-    .editor-area::-webkit-scrollbar-thumb:hover,
-    .event-list::-webkit-scrollbar-thumb:hover,
-    .modal-sidebar::-webkit-scrollbar-thumb:hover,
-    .detail-content::-webkit-scrollbar-thumb:hover {
-      background: #656A86;
-    }
-    
-    /* Data Center Styles */
     .detail-content {
       flex: 1;
       overflow-y: auto;
@@ -735,13 +763,6 @@
       font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       line-height: 120%;
       letter-spacing: 0.02em;
-    }
-    
-    .detail-meta {
-      font-size: 14px;
-      color: #656A86;
-      font-weight: 500;
-      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     
     .detail-section {
@@ -786,6 +807,7 @@
       color: #191B34;
       font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       line-height: 1.6;
+      padding: 8px 0;
     }
     
     .detail-field-input {
@@ -837,11 +859,44 @@
       border-color: #1F3CD0;
       box-shadow: 0 0 0 3px rgba(31, 60, 208, 0.1);
     }
+    
+    /* Scrollbar styling */
+    .left-sidebar::-webkit-scrollbar,
+    .editor-area::-webkit-scrollbar,
+    .event-list::-webkit-scrollbar,
+    .modal-sidebar::-webkit-scrollbar,
+    .detail-content::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .left-sidebar::-webkit-scrollbar-track,
+    .editor-area::-webkit-scrollbar-track,
+    .event-list::-webkit-scrollbar-track,
+    .modal-sidebar::-webkit-scrollbar-track,
+    .detail-content::-webkit-scrollbar-track {
+      background: #F8FAFD;
+    }
+    
+    .left-sidebar::-webkit-scrollbar-thumb,
+    .editor-area::-webkit-scrollbar-thumb,
+    .event-list::-webkit-scrollbar-thumb,
+    .modal-sidebar::-webkit-scrollbar-thumb,
+    .detail-content::-webkit-scrollbar-thumb {
+      background: #BEC2D5;
+      border-radius: 4px;
+    }
+    
+    .left-sidebar::-webkit-scrollbar-thumb:hover,
+    .editor-area::-webkit-scrollbar-thumb:hover,
+    .event-list::-webkit-scrollbar-thumb:hover,
+    .modal-sidebar::-webkit-scrollbar-thumb:hover,
+    .detail-content::-webkit-scrollbar-thumb:hover {
+      background: #656A86;
+    }
   </style>
 </head>
 <body>
   <div class="composer-container" id="composer">
-    <!-- Top Navigation -->
     <div class="top-nav">
       <div class="top-nav-left">
         <div class="logo-area">
@@ -861,7 +916,6 @@
       </div>
     </div>
 
-    <!-- Sub Header -->
     <div class="sub-header">
       <div class="sub-header-left">
         <button class="btn-icon">←</button>
@@ -885,7 +939,6 @@
       </div>
     </div>
 
-    <!-- Tabs -->
     <div class="tabs-container">
       <button class="tab active">Planning</button>
       <button class="tab">Metadata</button>
@@ -895,11 +948,8 @@
       <button class="btn-icon">▼</button>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
-      <!-- Left Sidebar -->
       <div class="left-sidebar">
-        <!-- Circulations -->
         <div>
           <button class="section-header" onclick="toggleSection('circulations')">
             Circulations
@@ -929,7 +979,6 @@
           </div>
         </div>
 
-        <!-- Headlines -->
         <div style="margin-top: 24px;">
           <button class="section-header" onclick="toggleSection('headlines')">
             Headlines
@@ -954,7 +1003,6 @@
         </div>
       </div>
 
-      <!-- Editor Area -->
       <div class="editor-area" id="editor-area">
         <div class="editor-toolbar">
           <button class="btn-icon">↶</button>
@@ -977,9 +1025,7 @@
     </div>
   </div>
 
-  <!-- Data Center Application -->
   <div class="data-center-container" id="data-center">
-    <!-- Top Navigation -->
     <div class="top-nav">
       <div class="top-nav-left">
         <div class="logo-area">
@@ -999,7 +1045,6 @@
       </div>
     </div>
 
-    <!-- Sub Header -->
     <div class="sub-header">
       <div class="sub-header-left">
         <button class="btn-icon" onclick="returnToComposer()">←</button>
@@ -1021,13 +1066,11 @@
       </div>
     </div>
 
-    <!-- Detail Content -->
     <div class="detail-content">
       <div class="detail-header">
         <h1 class="detail-title" id="detail-page-title">Event Details</h1>
       </div>
 
-      <!-- Basic Information Section -->
       <div class="detail-section">
         <h2 class="detail-section-title">Basic Information</h2>
         
@@ -1068,7 +1111,6 @@
         </div>
       </div>
 
-      <!-- Schema & Version Section -->
       <div class="detail-section">
         <h2 class="detail-section-title">Schema & Version</h2>
         
@@ -1087,7 +1129,6 @@
         </div>
       </div>
 
-      <!-- Event Details Section -->
       <div class="detail-section">
         <h2 class="detail-section-title">Event Details</h2>
         
@@ -1141,7 +1182,6 @@
         </div>
       </div>
 
-      <!-- Featured Image Section -->
       <div class="detail-section">
         <h2 class="detail-section-title">Featured Image</h2>
         
@@ -1164,7 +1204,6 @@
         </div>
       </div>
 
-      <!-- Organizer Information Section -->
       <div class="detail-section">
         <h2 class="detail-section-title">Organizer Information</h2>
         
@@ -1186,7 +1225,6 @@
         </div>
       </div>
 
-      <!-- Event Dates & Times Section -->
       <div class="detail-section">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
           <h2 class="detail-section-title" style="margin-bottom: 0;">Event Dates & Times</h2>
@@ -1216,7 +1254,6 @@
         </div>
       </div>
 
-      <!-- Location & Links Section -->
       <div class="detail-section">
         <h2 class="detail-section-title">Location & Links</h2>
         
@@ -1231,7 +1268,6 @@
         </div>
       </div>
 
-      <!-- System Information Section -->
       <div class="detail-section">
         <h2 class="detail-section-title">System Information</h2>
         
@@ -1262,7 +1298,6 @@
     </div>
   </div>
 
-  <!-- Data Modal -->
   <div class="modal-overlay" id="data-modal">
     <div class="modal-content">
       <div class="modal-sidebar">
@@ -1285,272 +1320,234 @@
     </div>
   </div>
 
+  <div class="modal-overlay" id="event-detail-modal">
+    <div class="modal-content" style="width: 80vw; height: 85vh;">
+      <div class="modal-main" style="width: 100%;">
+        <div class="modal-header">
+          <h2 id="modal-detail-title">Event Details</h2>
+          <button class="btn-icon" onclick="closeEventDetailModal()" style="font-size: 24px; padding: 4px; width: 32px; height: 32px;">×</button>
+        </div>
+        <div style="flex: 1; overflow-y: auto; padding: 24px;" id="modal-detail-content">
+        </div>
+        <div style="padding: 24px; border-top: 1px solid #E0E3EE; display: flex; justify-content: flex-end; gap: 12px; background-color: #FFFFFF;">
+          <button class="btn btn-secondary" onclick="closeEventDetailModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="closeEventDetailModal()">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // App State
-    let articleBlocks = [
-      { type: 'paragraph', text: 'The 2021 Formula 1 season was one of the most dramatic, controversial, and competitive in the sport\'s history. Two titans of the grid — Lewis Hamilton and Max Verstappen — went head-to-head in a year-long duel that captivated fans around the world.' },
+    var articleBlocks = [
+      { type: 'paragraph', text: 'The 2021 Formula 1 season was one of the most dramatic, controversial, and competitive in the sport history. Two titans of the grid went head-to-head in a year-long duel that captivated fans around the world.' },
       { type: 'heading', text: 'Early Season Battles' },
-      { type: 'paragraph', text: 'From the opening round in Bahrain, it was clear that Red Bull and Mercedes were evenly matched. Verstappen took early poles, while Hamilton\'s experience and strategy kept him in contention. The two traded wins and exchanged the championship lead multiple times across the first half of the season.' },
+      { type: 'paragraph', text: 'From the opening round in Bahrain, it was clear that Red Bull and Mercedes were evenly matched. Verstappen took early poles, while Hamilton experience and strategy kept him in contention. The two traded wins and exchanged the championship lead multiple times across the first half of the season.' },
       { type: 'heading', text: 'Tensions Rising' },
       { type: 'paragraph', text: 'By mid-season, their rivalry grew increasingly tense, highlighted by collisions at Silverstone and Monza that sent shockwaves through the paddock. Each incident added layers of controversy and rivalry, setting the stage for a nail-biting finish.' },
       { type: 'heading', text: 'Final Showdown in Abu Dhabi' },
-      { type: 'paragraph', text: 'Entering the final race at Yas Marina, the two drivers were tied on points — a scenario unseen in decades. After a chaotic and controversial finish involving a late safety car and race control decisions, Max Verstappen claimed his first World Championship, passing Hamilton on the final lap.' },
+      { type: 'paragraph', text: 'Entering the final race at Yas Marina, the two drivers were tied on points. After a chaotic and controversial finish involving a late safety car and race control decisions, Max Verstappen claimed his first World Championship, passing Hamilton on the final lap.' },
       { type: 'heading', text: 'Aftermath and Legacy' },
-      { type: 'paragraph', text: 'The aftermath was filled with debate, protests, and regulatory scrutiny, ultimately leading to major procedural changes for the following season. Still, the 2021 championship stands as a watershed moment in F1 history — a clash of generations, with blood-pumping brilliance and unforgettable drama.' }
+      { type: 'paragraph', text: 'The aftermath was filled with debate, protests, and regulatory scrutiny, ultimately leading to major procedural changes for the following season. Still, the 2021 championship stands as a watershed moment in F1 history.' }
     ];
 
-    let activeMenuIndex = null;
+    var activeMenuIndex = null;
+    var activePlaceholderIndex = null;
 
-    const events = [
+    var events = [
       { title: "2025 National Race Championship", status: "PUBLISHED", category: "Sports", lastModified: "9/23/2025, 8:35 PM", published: "9/17/2025, 9:28 AM", author: "DHASHLAMON", hasEventbrite: true },
       { title: "Contemporary Art Gallery Opening Reception", status: "DRAFT", category: "Arts", lastModified: "9/16/2025, 10:38 PM", published: "--", author: "ARTCURATOR", hasEventbrite: false },
       { title: "Tech Innovation Summit 2025", status: "PUBLISHED", category: "Business", lastModified: "9/15/2025, 10:58 PM", published: "9/15/2025, 10:11 AM", author: "TECHWRITER", hasEventbrite: true },
       { title: "Community 5K Fun Run", status: "PUBLISHED", category: "Sports", lastModified: "10/18/2025, 3:22 PM", published: "10/15/2025, 9:45 AM", author: "EVENTCOORD", hasEventbrite: false }
     ];
 
-    // Functions
     function toggleSection(section) {
-      const content = document.getElementById(`section-${section}`);
-      const chevron = document.getElementById(`chevron-${section}`);
+      var content = document.getElementById('section-' + section);
+      var chevron = document.getElementById('chevron-' + section);
       content.classList.toggle('open');
       chevron.classList.toggle('rotated');
     }
 
     function renderArticle() {
-      const container = document.getElementById('article-content');
-      container.innerHTML = '<h1 class="article-title">The 2021 Formula 1 World Championship: A Season Like No Other</h1>';
+      var container = document.getElementById('article-content');
+      container.innerHTML = '';
       
-      articleBlocks.forEach((block, index) => {
+      var title = document.createElement('h1');
+      title.className = 'article-title';
+      title.textContent = 'The 2021 Formula 1 World Championship: A Season Like No Other';
+      container.appendChild(title);
+      
+      for (var i = 0; i < articleBlocks.length; i++) {
+        var block = articleBlocks[i];
+        
         if (block.type === 'placeholder') {
-          const div = document.createElement('div');
+          var div = document.createElement('div');
           div.className = 'event-placeholder';
           div.textContent = 'Event Placeholder';
+          div.style.position = 'relative';
+          div.setAttribute('data-index', i);
+          div.onclick = function(e) {
+            e.stopPropagation();
+            var idx = parseInt(this.getAttribute('data-index'));
+            
+            // Remove selected class from all placeholders
+            var allPlaceholders = document.querySelectorAll('.event-placeholder');
+            for (var p = 0; p < allPlaceholders.length; p++) {
+              allPlaceholders[p].classList.remove('selected');
+            }
+            
+            // Add selected class to clicked placeholder
+            this.classList.add('selected');
+            
+            togglePlaceholderFlyout(idx);
+          };
+          
+          var flyout = document.createElement('div');
+          flyout.className = 'placeholder-flyout';
+          flyout.id = 'flyout-' + i;
+          
+          var flyoutBtn = document.createElement('button');
+          flyoutBtn.className = 'flyout-button';
+          flyoutBtn.textContent = 'Edit';
+          flyoutBtn.setAttribute('data-index', i);
+          flyoutBtn.onclick = function(e) {
+            e.stopPropagation();
+            var idx = parseInt(this.getAttribute('data-index'));
+            openEventDetailModal(idx);
+          };
+          
+          flyout.appendChild(flyoutBtn);
+          div.appendChild(flyout);
           container.appendChild(div);
         } else if (block.type === 'heading') {
-          const h2 = document.createElement('h2');
+          var h2 = document.createElement('h2');
           h2.className = 'article-heading';
           h2.textContent = block.text;
           container.appendChild(h2);
         } else {
-          const p = document.createElement('p');
+          var p = document.createElement('p');
           p.className = 'article-paragraph';
           p.innerHTML = block.text.replace(/Silverstone|Monza|Max Verstappen/g, '<strong>$&</strong>');
           container.appendChild(p);
         }
         
-        // Add icon area between blocks
-        if (index < articleBlocks.length - 1) {
-          const addArea = document.createElement('div');
+        if (i < articleBlocks.length - 1) {
+          var addArea = document.createElement('div');
           addArea.className = 'add-icon-area';
-          addArea.innerHTML = `
-            <div class="add-icon" id="add-icon-${index}">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2">
-                <line x1="12" y1="5" x2="12" y2="19"/>
-                <line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-            </div>
-            <div class="add-menu" id="add-menu-${index}">
-              <button class="add-menu-icon" title="Audio">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M9 18V5l12-2v13M9 13l12-2"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="Video">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
-                  <line x1="7" y1="2" x2="7" y2="22"/>
-                  <line x1="17" y1="2" x2="17" y2="22"/>
-                  <line x1="2" y1="12" x2="22" y2="12"/>
-                  <line x1="2" y1="7" x2="7" y2="7"/>
-                  <line x1="2" y1="17" x2="7" y2="17"/>
-                  <line x1="17" y1="17" x2="22" y2="17"/>
-                  <line x1="17" y1="7" x2="22" y2="7"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="Image">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                  <circle cx="8.5" cy="8.5" r="1.5"/>
-                  <polyline points="21 15 16 10 5 21"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="Share">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="18" cy="5" r="3"/>
-                  <circle cx="6" cy="12" r="3"/>
-                  <circle cx="18" cy="19" r="3"/>
-                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="Annotations">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="Calendar">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                  <line x1="16" y1="2" x2="16" y2="6"/>
-                  <line x1="8" y1="2" x2="8" y2="6"/>
-                  <line x1="3" y1="10" x2="21" y2="10"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="Comment">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="Block">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="3" width="7" height="7"/>
-                  <rect x="14" y="3" width="7" height="7"/>
-                  <rect x="14" y="14" width="7" height="7"/>
-                  <rect x="3" y="14" width="7" height="7"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="Quote">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/>
-                  <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="List">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="8" y1="6" x2="21" y2="6"/>
-                  <line x1="8" y1="12" x2="21" y2="12"/>
-                  <line x1="8" y1="18" x2="21" y2="18"/>
-                  <line x1="3" y1="6" x2="3.01" y2="6"/>
-                  <line x1="3" y1="12" x2="3.01" y2="12"/>
-                  <line x1="3" y1="18" x2="3.01" y2="18"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="Code">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="16 18 22 12 16 6"/>
-                  <polyline points="8 6 2 12 8 18"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="Link">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="Header">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="4 7 4 4 20 4 20 7"/>
-                  <line x1="9" y1="20" x2="15" y2="20"/>
-                  <line x1="12" y1="4" x2="12" y2="20"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="Grid">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="Divider">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="Star">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="Document">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                  <polyline points="14 2 14 8 20 8"/>
-                  <line x1="16" y1="13" x2="8" y2="13"/>
-                  <line x1="16" y1="17" x2="8" y2="17"/>
-                  <polyline points="10 9 9 9 8 9"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="Gallery">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                  <circle cx="8.5" cy="8.5" r="1.5"/>
-                  <polyline points="21 15 16 10 5 21"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="Navigation">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="22" y1="2" x2="11" y2="13"/>
-                  <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="Settings">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="3"/>
-                  <path d="M12 1v6m0 6v6m9.66-9H15m-6 0H3m15.66 0L16 8.34M8.34 16 6 18.34m0-12.68L8.34 8M16 16l2.34 2.34"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="Print">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="6 9 6 2 18 2 18 9"/>
-                  <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-                  <rect x="6" y="14" width="12" height="8"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="News">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="Edit">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" title="Chat">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                  <line x1="9" y1="10" x2="15" y2="10"/>
-                  <line x1="12" y1="7" x2="12" y2="13"/>
-                </svg>
-              </button>
-              <button class="add-menu-icon" onclick="openDataModal(${index})" title="Data">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <ellipse cx="12" cy="5" rx="9" ry="3"/>
-                  <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
-                  <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
-                </svg>
-              </button>
-            </div>
-          `;
           
-          addArea.addEventListener('mouseenter', () => {
-            document.getElementById(`add-icon-${index}`).classList.add('active');
+          var addIcon = document.createElement('div');
+          addIcon.className = 'add-icon';
+          addIcon.id = 'add-icon-' + i;
+          addIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+          
+          var addMenu = document.createElement('div');
+          addMenu.className = 'add-menu';
+          addMenu.id = 'add-menu-' + i;
+          
+          // Create all the menu buttons
+          var menuButtons = [
+            { title: 'Audio', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13M9 13l12-2"/></svg>' },
+            { title: 'Video', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>' },
+            { title: 'Image', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>' },
+            { title: 'Share', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>' },
+            { title: 'Annotations', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>' },
+            { title: 'Calendar', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>' },
+            { title: 'Comment', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' },
+            { title: 'Block', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>' },
+            { title: 'Quote', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>' },
+            { title: 'List', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>' },
+            { title: 'Code', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>' },
+            { title: 'Link', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>' },
+            { title: 'Header', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>' },
+            { title: 'Grid', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>' },
+            { title: 'Divider', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>' },
+            { title: 'Star', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>' },
+            { title: 'Document', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>' },
+            { title: 'Gallery', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>' },
+            { title: 'Navigation', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>' },
+            { title: 'Settings', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m9.66-9H15m-6 0H3m15.66 0L16 8.34M8.34 16 6 18.34m0-12.68L8.34 8M16 16l2.34 2.34"/></svg>' },
+            { title: 'Print', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>' },
+            { title: 'News', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>' },
+            { title: 'Edit', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>' },
+            { title: 'Chat', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="12" y1="7" x2="12" y2="13"/></svg>' },
+            { title: 'Data', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>' }
+          ];
+          
+          for (var j = 0; j < menuButtons.length; j++) {
+            var btn = document.createElement('button');
+            btn.className = 'add-menu-icon';
+            btn.title = menuButtons[j].title;
+            btn.innerHTML = menuButtons[j].svg;
+            
+            if (menuButtons[j].title === 'Data') {
+              btn.setAttribute('data-index', i);
+              btn.onclick = function() {
+                var idx = parseInt(this.getAttribute('data-index'));
+                openDataModal(idx);
+              };
+            }
+            
+            addMenu.appendChild(btn);
+          }
+          
+          addArea.appendChild(addIcon);
+          addArea.appendChild(addMenu);
+          
+          addArea.setAttribute('data-index', i);
+          addArea.addEventListener('mouseenter', function() {
+            var idx = this.getAttribute('data-index');
+            document.getElementById('add-icon-' + idx).classList.add('active');
           });
           
-          addArea.addEventListener('mouseleave', () => {
-            if (activeMenuIndex !== index) {
-              document.getElementById(`add-icon-${index}`).classList.remove('active');
+          addArea.addEventListener('mouseleave', function() {
+            var idx = this.getAttribute('data-index');
+            if (activeMenuIndex != idx) {
+              document.getElementById('add-icon-' + idx).classList.remove('active');
             }
           });
           
-          const icon = addArea.querySelector('.add-icon');
-          icon.addEventListener('click', () => toggleAddMenu(index));
+          addIcon.setAttribute('data-index', i);
+          addIcon.addEventListener('click', function() {
+            var idx = this.getAttribute('data-index');
+            toggleAddMenu(idx);
+          });
           
           container.appendChild(addArea);
         }
-      });
+      }
     }
 
     function toggleAddMenu(index) {
-      // Close any open menu
-      if (activeMenuIndex !== null && activeMenuIndex !== index) {
-        document.getElementById(`add-menu-${activeMenuIndex}`).classList.remove('visible');
-        document.getElementById(`add-icon-${activeMenuIndex}`).classList.remove('active');
+      if (activeMenuIndex !== null && activeMenuIndex != index) {
+        var oldMenu = document.getElementById('add-menu-' + activeMenuIndex);
+        if (oldMenu) {
+          oldMenu.classList.remove('visible');
+        }
+        var oldIcon = document.getElementById('add-icon-' + activeMenuIndex);
+        if (oldIcon) {
+          oldIcon.classList.remove('active');
+        }
       }
       
-      // Toggle current menu
-      const menu = document.getElementById(`add-menu-${index}`);
-      menu.classList.toggle('visible');
-      activeMenuIndex = menu.classList.contains('visible') ? index : null;
+      var menu = document.getElementById('add-menu-' + index);
+      if (menu) {
+        menu.classList.toggle('visible');
+        activeMenuIndex = menu.classList.contains('visible') ? index : null;
+      }
+    }
+
+    function togglePlaceholderFlyout(index) {
+      var flyouts = document.querySelectorAll('.placeholder-flyout');
+      for (var i = 0; i < flyouts.length; i++) {
+        if (i !== index) {
+          flyouts[i].classList.remove('visible');
+        }
+      }
+
+      var flyout = document.getElementById('flyout-' + index);
+      if (flyout) {
+        flyout.classList.toggle('visible');
+        activePlaceholderIndex = flyout.classList.contains('visible') ? index : null;
+      }
     }
 
     function openDataModal(index) {
@@ -1564,33 +1561,115 @@
     }
 
     function renderEventList() {
-      const container = document.getElementById('event-list');
+      var container = document.getElementById('event-list');
       container.innerHTML = '';
       
-      events.forEach((event, i) => {
-        const item = document.createElement('div');
+      for (var i = 0; i < events.length; i++) {
+        var event = events[i];
+        var item = document.createElement('div');
         item.className = 'event-item';
-        item.innerHTML = `
-          <div>
-            <div class="event-item-title">${event.title}</div>
-            ${event.hasEventbrite ? '<div class="event-badge">✓ Eventbrite</div>' : ''}
-            <div style="display: flex; gap: 8px; align-items: center; margin-top: 12px;">
-              <span style="font-size: 14px; color: #656A86; font-weight: 500;">Workflow status</span>
-              <span class="status-badge ${event.status === 'PUBLISHED' ? 'status-published' : 'status-draft'}">${event.status}</span>
-              <span class="category-badge">${event.category}</span>
-            </div>
-            <div style="display: flex; gap: 12px; margin-top: 12px;">
-              <button class="btn btn-primary" onclick="selectEvent(${i})">Select</button>
-              <button class="btn btn-neutral" onclick="previewEvent(${i})">Preview</button>
-              <button class="btn btn-neutral" onclick="editEvent(${i})">Edit</button>
-            </div>
-          </div>
-          <div style="font-size: 14px; color: #191B34; font-weight: 500;">${event.lastModified}</div>
-          <div style="font-size: 14px; color: #191B34; font-weight: 500;">${event.published}</div>
-          <div style="font-size: 14px; color: #656A86; font-weight: 500;">${event.author}</div>
-        `;
+        
+        var col1 = document.createElement('div');
+        
+        var title = document.createElement('div');
+        title.className = 'event-item-title';
+        title.textContent = event.title;
+        col1.appendChild(title);
+        
+        if (event.hasEventbrite) {
+          var badge = document.createElement('div');
+          badge.className = 'event-badge';
+          badge.textContent = '✓ Eventbrite';
+          col1.appendChild(badge);
+        }
+        
+        var statusRow = document.createElement('div');
+        statusRow.style.display = 'flex';
+        statusRow.style.gap = '8px';
+        statusRow.style.alignItems = 'center';
+        statusRow.style.marginTop = '12px';
+        
+        var statusLabel = document.createElement('span');
+        statusLabel.style.fontSize = '14px';
+        statusLabel.style.color = '#656A86';
+        statusLabel.style.fontWeight = '500';
+        statusLabel.textContent = 'Workflow status';
+        
+        var statusBadge = document.createElement('span');
+        statusBadge.className = 'status-badge ' + (event.status === 'PUBLISHED' ? 'status-published' : 'status-draft');
+        statusBadge.textContent = event.status;
+        
+        var catBadge = document.createElement('span');
+        catBadge.className = 'category-badge';
+        catBadge.textContent = event.category;
+        
+        statusRow.appendChild(statusLabel);
+        statusRow.appendChild(statusBadge);
+        statusRow.appendChild(catBadge);
+        col1.appendChild(statusRow);
+        
+        var btnRow = document.createElement('div');
+        btnRow.style.display = 'flex';
+        btnRow.style.gap = '12px';
+        btnRow.style.marginTop = '12px';
+        
+        var selectBtn = document.createElement('button');
+        selectBtn.className = 'btn btn-primary';
+        selectBtn.textContent = 'Select';
+        selectBtn.setAttribute('data-index', i);
+        selectBtn.onclick = function() {
+          var idx = parseInt(this.getAttribute('data-index'));
+          selectEvent(idx);
+        };
+        
+        var previewBtn = document.createElement('button');
+        previewBtn.className = 'btn btn-neutral';
+        previewBtn.textContent = 'Preview';
+        previewBtn.setAttribute('data-index', i);
+        previewBtn.onclick = function() {
+          var idx = parseInt(this.getAttribute('data-index'));
+          previewEvent(idx);
+        };
+        
+        var editBtn = document.createElement('button');
+        editBtn.className = 'btn btn-neutral';
+        editBtn.textContent = 'Edit';
+        editBtn.setAttribute('data-index', i);
+        editBtn.onclick = function() {
+          var idx = parseInt(this.getAttribute('data-index'));
+          editEvent(idx);
+        };
+        
+        btnRow.appendChild(selectBtn);
+        btnRow.appendChild(previewBtn);
+        btnRow.appendChild(editBtn);
+        col1.appendChild(btnRow);
+        
+        var col2 = document.createElement('div');
+        col2.style.fontSize = '14px';
+        col2.style.color = '#191B34';
+        col2.style.fontWeight = '500';
+        col2.textContent = event.lastModified;
+        
+        var col3 = document.createElement('div');
+        col3.style.fontSize = '14px';
+        col3.style.color = '#191B34';
+        col3.style.fontWeight = '500';
+        col3.textContent = event.published;
+        
+        var col4 = document.createElement('div');
+        col4.style.fontSize = '14px';
+        col4.style.color = '#656A86';
+        col4.style.fontWeight = '500';
+        col4.textContent = event.author;
+        
+        item.appendChild(col1);
+        item.appendChild(col2);
+        item.appendChild(col3);
+        item.appendChild(col4);
+        
         container.appendChild(item);
-      });
+      }
     }
 
     function selectEvent(eventIndex) {
@@ -1602,78 +1681,262 @@
     }
 
     function previewEvent(eventIndex) {
-      // Preview functionality
     }
 
     function editEvent(eventIndex) {
-      const event = events[eventIndex];
+      var event = events[eventIndex];
       
-      // Hide composer, show data center
       document.getElementById('composer').classList.add('hidden');
       document.getElementById('data-center').classList.add('visible');
       
-      // Populate header
       document.getElementById('event-detail-title').textContent = event.title;
-      document.getElementById('event-detail-meta').textContent = `Last updated: ${event.lastModified}`;
+      document.getElementById('event-detail-meta').textContent = 'Last updated: ' + event.lastModified;
       document.getElementById('detail-page-title').textContent = event.title;
       
-      // Populate Basic Information
       document.getElementById('edit-status').value = event.status;
       document.getElementById('edit-language').value = 'English';
       document.getElementById('edit-title').value = event.title;
       document.getElementById('edit-slug').value = event.title.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
       document.getElementById('edit-id').value = '109391';
       
-      // Populate Event Details
       document.getElementById('edit-category').value = event.category;
-      document.getElementById('edit-description').value = `Details about ${event.title}`;
+      document.getElementById('edit-description').value = 'Details about ' + event.title;
       document.getElementById('edit-source').value = event.hasEventbrite ? 'Eventbrite' : 'Manual';
       document.getElementById('edit-event-status').value = 'Confirmed';
       document.getElementById('edit-priority').value = '1';
       document.getElementById('edit-price').value = 'free';
       
-      // Populate Organizer Information
       document.getElementById('edit-organizer-name').value = 'Running Club NYC';
       
-      // Populate Event Dates & Times
       document.getElementById('edit-start-date').value = '06/15/2025, 09:00';
       document.getElementById('edit-end-date').value = '06/15/2025, 05:00';
       
-      // Populate Location & Links
       document.getElementById('edit-location').value = 'Central Park, NYC';
       document.getElementById('edit-event-url').value = 'https://example.com/event';
       
-      // Populate System Information
       document.getElementById('detail-revision').value = '1';
       document.getElementById('detail-author').value = event.author;
       document.getElementById('detail-create-date').value = '11/11/2025, 07:09 PM';
       document.getElementById('detail-modified').value = event.lastModified;
       
-      // Close the modal
       closeDataModal();
     }
 
     function returnToComposer() {
-      // Hide data center, show composer
       document.getElementById('data-center').classList.remove('visible');
       document.getElementById('composer').classList.remove('hidden');
     }
 
-    // Close menu when clicking outside
-    document.addEventListener('click', (e) => {
+    function openEventDetailModal(blockIndex) {
+      var block = articleBlocks[blockIndex];
+      if (!block || !block.event) return;
+
+      var event = block.event;
+      var modal = document.getElementById('event-detail-modal');
+      var content = document.getElementById('modal-detail-content');
+      
+      document.getElementById('modal-detail-title').textContent = event.title;
+      
+      content.innerHTML = '';
+      
+      var wrapper = document.createElement('div');
+      wrapper.style.maxWidth = '1000px';
+      wrapper.style.margin = '0 auto';
+      
+      var basicSection = document.createElement('div');
+      basicSection.className = 'detail-section';
+      
+      var basicTitle = document.createElement('h2');
+      basicTitle.className = 'detail-section-title';
+      basicTitle.textContent = 'Basic Information';
+      basicSection.appendChild(basicTitle);
+      
+      var grid1 = document.createElement('div');
+      grid1.style.display = 'grid';
+      grid1.style.gridTemplateColumns = '1fr 1fr';
+      grid1.style.gap = '24px';
+      grid1.style.marginBottom = '24px';
+      
+      var statusField = document.createElement('div');
+      statusField.className = 'detail-field';
+      var statusLabel = document.createElement('label');
+      statusLabel.className = 'detail-field-label';
+      statusLabel.textContent = 'Status';
+      var statusInput = document.createElement('input');
+      statusInput.type = 'text';
+      statusInput.className = 'detail-field-input';
+      statusInput.value = event.status;
+      statusInput.readOnly = true;
+      statusInput.style.backgroundColor = '#F8FAFD';
+      statusField.appendChild(statusLabel);
+      statusField.appendChild(statusInput);
+      
+      var langField = document.createElement('div');
+      langField.className = 'detail-field';
+      var langLabel = document.createElement('label');
+      langLabel.className = 'detail-field-label';
+      langLabel.textContent = 'Language';
+      var langInput = document.createElement('input');
+      langInput.type = 'text';
+      langInput.className = 'detail-field-input';
+      langInput.value = 'English';
+      langInput.readOnly = true;
+      langInput.style.backgroundColor = '#F8FAFD';
+      langField.appendChild(langLabel);
+      langField.appendChild(langInput);
+      
+      grid1.appendChild(statusField);
+      grid1.appendChild(langField);
+      basicSection.appendChild(grid1);
+      
+      var nameField = document.createElement('div');
+      nameField.className = 'detail-field';
+      var nameLabel = document.createElement('label');
+      nameLabel.className = 'detail-field-label';
+      nameLabel.textContent = 'Display Name';
+      var nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.className = 'detail-field-input';
+      nameInput.value = event.title;
+      nameInput.readOnly = true;
+      nameInput.style.backgroundColor = '#F8FAFD';
+      nameField.appendChild(nameLabel);
+      nameField.appendChild(nameInput);
+      basicSection.appendChild(nameField);
+      
+      var catField = document.createElement('div');
+      catField.className = 'detail-field';
+      var catLabel = document.createElement('label');
+      catLabel.className = 'detail-field-label';
+      catLabel.textContent = 'Category';
+      var catInput = document.createElement('input');
+      catInput.type = 'text';
+      catInput.className = 'detail-field-input';
+      catInput.value = event.category;
+      catInput.readOnly = true;
+      catInput.style.backgroundColor = '#F8FAFD';
+      catField.appendChild(catLabel);
+      catField.appendChild(catInput);
+      basicSection.appendChild(catField);
+      
+      wrapper.appendChild(basicSection);
+      
+      var metaSection = document.createElement('div');
+      metaSection.className = 'detail-section';
+      
+      var metaTitle = document.createElement('h2');
+      metaTitle.className = 'detail-section-title';
+      metaTitle.textContent = 'Metadata';
+      metaSection.appendChild(metaTitle);
+      
+      var grid2 = document.createElement('div');
+      grid2.style.display = 'grid';
+      grid2.style.gridTemplateColumns = '1fr 1fr';
+      grid2.style.gap = '24px';
+      
+      var authorField = document.createElement('div');
+      authorField.className = 'detail-field';
+      var authorLabel = document.createElement('label');
+      authorLabel.className = 'detail-field-label';
+      authorLabel.textContent = 'Author';
+      var authorValue = document.createElement('div');
+      authorValue.className = 'detail-field-value';
+      authorValue.textContent = event.author;
+      authorField.appendChild(authorLabel);
+      authorField.appendChild(authorValue);
+      
+      var modField = document.createElement('div');
+      modField.className = 'detail-field';
+      var modLabel = document.createElement('label');
+      modLabel.className = 'detail-field-label';
+      modLabel.textContent = 'Last Modified';
+      var modValue = document.createElement('div');
+      modValue.className = 'detail-field-value';
+      modValue.textContent = event.lastModified;
+      modField.appendChild(modLabel);
+      modField.appendChild(modValue);
+      
+      var pubField = document.createElement('div');
+      pubField.className = 'detail-field';
+      var pubLabel = document.createElement('label');
+      pubLabel.className = 'detail-field-label';
+      pubLabel.textContent = 'Published Date';
+      var pubValue = document.createElement('div');
+      pubValue.className = 'detail-field-value';
+      pubValue.textContent = event.published;
+      pubField.appendChild(pubLabel);
+      pubField.appendChild(pubValue);
+      
+      var ebField = document.createElement('div');
+      ebField.className = 'detail-field';
+      var ebLabel = document.createElement('label');
+      ebLabel.className = 'detail-field-label';
+      ebLabel.textContent = 'Eventbrite Integration';
+      var ebValue = document.createElement('div');
+      ebValue.className = 'detail-field-value';
+      ebValue.textContent = event.hasEventbrite ? 'Connected' : 'Not connected';
+      ebField.appendChild(ebLabel);
+      ebField.appendChild(ebValue);
+      
+      grid2.appendChild(authorField);
+      grid2.appendChild(modField);
+      grid2.appendChild(pubField);
+      grid2.appendChild(ebField);
+      
+      metaSection.appendChild(grid2);
+      wrapper.appendChild(metaSection);
+      
+      content.appendChild(wrapper);
+      modal.classList.add('visible');
+    }
+
+    function closeEventDetailModal() {
+      document.getElementById('event-detail-modal').classList.remove('visible');
+      
+      // Remove selected class from all placeholders when modal closes
+      var allPlaceholders = document.querySelectorAll('.event-placeholder');
+      for (var p = 0; p < allPlaceholders.length; p++) {
+        allPlaceholders[p].classList.remove('selected');
+      }
+    }
+
+    document.addEventListener('click', function(e) {
       if (!e.target.closest('.add-menu') && !e.target.closest('.add-icon')) {
         if (activeMenuIndex !== null) {
-          const menu = document.getElementById(`add-menu-${activeMenuIndex}`);
+          var menu = document.getElementById('add-menu-' + activeMenuIndex);
           if (menu) {
             menu.classList.remove('visible');
-            document.getElementById(`add-icon-${activeMenuIndex}`).classList.remove('active');
+          }
+          var icon = document.getElementById('add-icon-' + activeMenuIndex);
+          if (icon) {
+            icon.classList.remove('active');
           }
           activeMenuIndex = null;
         }
       }
+      
+      if (!e.target.closest('.event-placeholder') && !e.target.closest('.placeholder-flyout')) {
+        var flyouts = document.querySelectorAll('.placeholder-flyout');
+        for (var i = 0; i < flyouts.length; i++) {
+          flyouts[i].classList.remove('visible');
+        }
+        activePlaceholderIndex = null;
+        
+        // Remove selected class from all placeholders
+        var allPlaceholders = document.querySelectorAll('.event-placeholder');
+        for (var p = 0; p < allPlaceholders.length; p++) {
+          allPlaceholders[p].classList.remove('selected');
+        }
+      }
     });
 
-    // Initialize
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeDataModal();
+        closeEventDetailModal();
+      }
+    });
+
     renderArticle();
   </script>
 </body>
