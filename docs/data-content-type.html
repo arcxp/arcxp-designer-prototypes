@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Composer Prototype</title>
+  <title>Arc XP Composer Prototype</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Output+Sans:wght@300;400;500;600;700&display=swap">
   <style>
     * {
@@ -29,6 +29,21 @@
       flex-direction: column;
       height: 100vh;
       background-color: #F8FAFD;
+    }
+    
+    .composer-container.hidden {
+      display: none;
+    }
+    
+    .data-center-container {
+      display: none;
+      flex-direction: column;
+      height: 100vh;
+      background-color: #F8FAFD;
+    }
+    
+    .data-center-container.visible {
+      display: flex;
     }
     
     .top-nav {
@@ -69,6 +84,12 @@
       color: #E0E3EE;
       text-decoration: none;
       font-size: 14px;
+      font-weight: 500;
+      transition: color 200ms ease;
+    }
+    
+    .nav-link:hover {
+      color: #FFFFFF;
     }
     
     .top-nav-right {
@@ -78,12 +99,13 @@
     }
     
     .sandbox-badge {
-      background-color: #F4C681;
+      background-color: #FDF1D5;
       color: #692609;
-      padding: 6px 16px;
+      padding: 6px 12px;
       border-radius: 4px;
       font-size: 14px;
       font-weight: 500;
+      border: 1px solid #F4C681;
     }
     
     .user-avatar {
@@ -125,10 +147,15 @@
       cursor: pointer;
       font-size: 14px;
       font-weight: 500;
-      border: none;
+      border: 1px solid transparent;
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      transition: all 200ms ease;
+      height: 32px;
+      line-height: 120%;
+      letter-spacing: 0.02em;
     }
     
     .btn-icon {
@@ -137,21 +164,46 @@
       cursor: pointer;
       padding: 8px;
       color: #656A86;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: all 200ms ease;
+    }
+    
+    .btn-icon:hover {
+      background-color: #EFF1F6;
+      color: #191B34;
     }
     
     .btn-neutral {
       background-color: #EFF1F6;
       color: #191B34;
+      border-color: transparent;
+    }
+    
+    .btn-neutral:hover {
+      background-color: #E0E3EE;
     }
     
     .btn-primary {
       background-color: #1F3CD0;
       color: #FFFFFF;
+      border-color: transparent;
+    }
+    
+    .btn-primary:hover {
+      background-color: #091678;
     }
     
     .btn-publish {
-      background-color: #656A86;
+      background-color: #20A453;
       color: #FFFFFF;
+      border-color: transparent;
+    }
+    
+    .btn-publish:hover {
+      background-color: #0A5F44;
     }
     
     .tabs-container {
@@ -160,6 +212,7 @@
       border-bottom: 1px solid #E0E3EE;
       display: flex;
       gap: 32px;
+      align-items: center;
     }
     
     .tab {
@@ -171,7 +224,14 @@
       font-weight: 500;
       color: #656A86;
       border-bottom: 2px solid transparent;
-      transition: all 0.2s;
+      transition: all 200ms ease;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 120%;
+      letter-spacing: 0.02em;
+    }
+    
+    .tab:hover {
+      color: #191B34;
     }
     
     .tab.active {
@@ -206,6 +266,14 @@
       font-weight: 600;
       color: #191B34;
       margin-bottom: 12px;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 120%;
+      letter-spacing: 0.02em;
+      transition: color 200ms ease;
+    }
+    
+    .section-header:hover {
+      color: #1F3CD0;
     }
     
     .section-content {
@@ -222,20 +290,37 @@
     
     .form-label {
       display: block;
-      fontSize: 14px;
+      font-size: 14px;
       font-weight: 500;
       color: #191B34;
       margin-bottom: 8px;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 120%;
+      letter-spacing: 0.02em;
     }
     
     .form-input {
       width: 100%;
       padding: 8px 12px;
-      border: 1px solid #656A86;
+      border: 1px solid #BEC2D5;
       border-radius: 4px;
       font-size: 14px;
       background-color: #FFFFFF;
       color: #191B34;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 120%;
+      letter-spacing: 0.02em;
+      transition: all 200ms ease;
+    }
+    
+    .form-input:hover {
+      border-color: #656A86;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #1F3CD0;
+      box-shadow: 0 0 0 3px rgba(31, 60, 208, 0.1);
     }
     
     .circulation-banner {
@@ -248,6 +333,26 @@
       align-items: center;
       margin-bottom: 12px;
       font-size: 14px;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 120%;
+      letter-spacing: 0.02em;
+    }
+    
+    .circulation-banner button {
+      background: #FFFFFF;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      color: #1F3CD0;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      transition: all 200ms ease;
+    }
+    
+    .circulation-banner button:hover {
+      background-color: #EFF1F6;
     }
     
     .circulation-info {
@@ -255,7 +360,10 @@
       padding: 12px;
       border-radius: 4px;
       font-size: 14px;
-      color: #656A86;
+      color: #191B34;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 120%;
+      letter-spacing: 0.02em;
     }
     
     .editor-area {
@@ -275,12 +383,34 @@
       align-items: center;
     }
     
+    .editor-toolbar select {
+      padding: 6px 12px;
+      border: 1px solid #BEC2D5;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #191B34;
+      background-color: #FFFFFF;
+      transition: all 200ms ease;
+    }
+    
+    .editor-toolbar select:hover {
+      border-color: #656A86;
+    }
+    
+    .editor-toolbar select:focus {
+      outline: none;
+      border-color: #1F3CD0;
+      box-shadow: 0 0 0 3px rgba(31, 60, 208, 0.1);
+    }
+    
     .article-title {
       font-size: 32px;
       font-weight: 500;
       color: #191B34;
       margin-bottom: 24px;
       line-height: 1.2;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     
     .article-paragraph {
@@ -288,6 +418,7 @@
       color: #191B34;
       line-height: 1.6;
       margin: 0 0 24px 0;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     
     .article-heading {
@@ -296,6 +427,7 @@
       color: #191B34;
       margin-bottom: 16px;
       line-height: 1.2;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     
     .add-icon-area {
@@ -319,7 +451,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s;
+      transition: all 200ms ease;
       opacity: 0;
       transform: scale(0.8);
       z-index: 10;
@@ -363,11 +495,12 @@
       align-items: center;
       justify-content: center;
       border-radius: 4px;
-      transition: background-color 0.2s;
+      transition: all 200ms ease;
     }
     
     .add-menu-icon:hover {
-      background-color: #F8FAFD;
+      background-color: #EFF1F6;
+      color: #1F3CD0;
     }
     
     .add-menu-icon svg {
@@ -381,10 +514,13 @@
       border-radius: 4px;
       margin-bottom: 24px;
       text-align: center;
-      border: 1px solid #E0E3EE;
+      border: 1px solid #BEC2D5;
       font-size: 16px;
       font-weight: 500;
       color: #656A86;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 120%;
+      letter-spacing: 0.02em;
     }
     
     .modal-overlay {
@@ -447,6 +583,11 @@
       gap: 16px;
       padding: 24px;
       border-bottom: 1px solid #E0E3EE;
+      transition: background-color 200ms ease;
+    }
+    
+    .event-item:hover {
+      background-color: #F8FAFD;
     }
     
     .event-badge {
@@ -461,6 +602,9 @@
       font-weight: 500;
       color: #064E3F;
       margin-bottom: 12px;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 120%;
+      letter-spacing: 0.02em;
     }
     
     .status-badge {
@@ -469,6 +613,9 @@
       border-radius: 4px;
       font-size: 12px;
       font-weight: 600;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 120%;
+      letter-spacing: 0.02em;
     }
     
     .status-published {
@@ -480,16 +627,220 @@
     }
     
     .chevron {
-      transition: transform 0.2s;
+      transition: transform 200ms ease;
+      color: #656A86;
     }
     
     .chevron.rotated {
       transform: rotate(180deg);
     }
+    
+    .modal-sidebar h3 {
+      font-size: 12px;
+      font-weight: 600;
+      color: #656A86;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 120%;
+    }
+    
+    .modal-header h2 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #191B34;
+      margin: 0;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 120%;
+      letter-spacing: 0.02em;
+    }
+    
+    .event-item-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #191B34;
+      margin-bottom: 8px;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 120%;
+      letter-spacing: 0.02em;
+    }
+    
+    .category-badge {
+      padding: 4px 12px;
+      background-color: #FFFFFF;
+      border: 1px solid #BEC2D5;
+      color: #191B34;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 120%;
+      letter-spacing: 0.02em;
+    }
+    
+    /* Scrollbar styling */
+    .left-sidebar::-webkit-scrollbar,
+    .editor-area::-webkit-scrollbar,
+    .event-list::-webkit-scrollbar,
+    .modal-sidebar::-webkit-scrollbar,
+    .detail-content::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .left-sidebar::-webkit-scrollbar-track,
+    .editor-area::-webkit-scrollbar-track,
+    .event-list::-webkit-scrollbar-track,
+    .modal-sidebar::-webkit-scrollbar-track,
+    .detail-content::-webkit-scrollbar-track {
+      background: #F8FAFD;
+    }
+    
+    .left-sidebar::-webkit-scrollbar-thumb,
+    .editor-area::-webkit-scrollbar-thumb,
+    .event-list::-webkit-scrollbar-thumb,
+    .modal-sidebar::-webkit-scrollbar-thumb,
+    .detail-content::-webkit-scrollbar-thumb {
+      background: #BEC2D5;
+      border-radius: 4px;
+    }
+    
+    .left-sidebar::-webkit-scrollbar-thumb:hover,
+    .editor-area::-webkit-scrollbar-thumb:hover,
+    .event-list::-webkit-scrollbar-thumb:hover,
+    .modal-sidebar::-webkit-scrollbar-thumb:hover,
+    .detail-content::-webkit-scrollbar-thumb:hover {
+      background: #656A86;
+    }
+    
+    /* Data Center Styles */
+    .detail-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 48px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+    .detail-header {
+      margin-bottom: 32px;
+    }
+    
+    .detail-title {
+      font-size: 32px;
+      font-weight: 500;
+      color: #191B34;
+      margin-bottom: 8px;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 120%;
+      letter-spacing: 0.02em;
+    }
+    
+    .detail-meta {
+      font-size: 14px;
+      color: #656A86;
+      font-weight: 500;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    
+    .detail-section {
+      background-color: #FFFFFF;
+      border: 1px solid #E0E3EE;
+      border-radius: 4px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    
+    .detail-section-title {
+      font-size: 18.72px;
+      font-weight: 600;
+      color: #191B34;
+      margin-bottom: 24px;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 120%;
+      letter-spacing: 0.02em;
+    }
+    
+    .detail-field {
+      margin-bottom: 24px;
+    }
+    
+    .detail-field:last-child {
+      margin-bottom: 0;
+    }
+    
+    .detail-field-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #191B34;
+      margin-bottom: 8px;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 120%;
+      letter-spacing: 0.02em;
+    }
+    
+    .detail-field-value {
+      font-size: 16px;
+      color: #191B34;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    
+    .detail-field-input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #BEC2D5;
+      border-radius: 4px;
+      font-size: 16px;
+      background-color: #FFFFFF;
+      color: #191B34;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 120%;
+      letter-spacing: 0.02em;
+      transition: all 200ms ease;
+    }
+    
+    .detail-field-input:hover {
+      border-color: #656A86;
+    }
+    
+    .detail-field-input:focus {
+      outline: none;
+      border-color: #1F3CD0;
+      box-shadow: 0 0 0 3px rgba(31, 60, 208, 0.1);
+    }
+    
+    .detail-field-textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #BEC2D5;
+      border-radius: 4px;
+      font-size: 16px;
+      background-color: #FFFFFF;
+      color: #191B34;
+      font-family: 'Output Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+      letter-spacing: 0.02em;
+      transition: all 200ms ease;
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    .detail-field-textarea:hover {
+      border-color: #656A86;
+    }
+    
+    .detail-field-textarea:focus {
+      outline: none;
+      border-color: #1F3CD0;
+      box-shadow: 0 0 0 3px rgba(31, 60, 208, 0.1);
+    }
   </style>
 </head>
 <body>
-  <div class="composer-container">
+  <div class="composer-container" id="composer">
     <!-- Top Navigation -->
     <div class="top-nav">
       <div class="top-nav-left">
@@ -505,7 +856,7 @@
       </div>
       <div class="top-nav-right">
         <div class="sandbox-badge">Sandbox</div>
-        <span style="font-size: 14px;">Aaron Schmidt</span>
+        <span style="font-size: 14px; font-weight: 500;">Aaron Schmidt</span>
         <div class="user-avatar">AS</div>
       </div>
     </div>
@@ -518,7 +869,7 @@
           <div style="font-size: 16px; font-weight: 500; color: #191B34;">
             The 2021 Formula 1 World Championship: A Season Like No Other
           </div>
-          <div style="font-size: 12px; color: #656A86; margin-top: 2px;">
+          <div style="font-size: 12px; color: #656A86; margin-top: 2px; font-weight: 500;">
             Saved 11/11/25 at 11:15 AM
           </div>
         </div>
@@ -556,25 +907,23 @@
           </button>
           <div class="section-content open" id="section-circulations">
             <div class="form-group">
-              <label class="form-label">Primary website <span style="color: #656A86;">(required)</span></label>
+              <label class="form-label">Primary website <span style="color: #656A86; font-weight: 400;">(required)</span></label>
               <select class="form-input">
                 <option>Adventure Awaits Updated</option>
               </select>
             </div>
             <div class="circulation-banner">
               <span>Circulated to 1 websites, and 1 sections</span>
-              <button style="background: #FFFFFF; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 500; color: #1F3CD0;">
-                Manage circulations
-              </button>
+              <button>Manage circulations</button>
             </div>
             <div class="circulation-info">
               <div style="margin-bottom: 8px;">
                 <span style="font-weight: 500; color: #191B34;">Primary website</span>
-                <div>Adventure Awaits Updated</div>
+                <div style="color: #656A86; margin-top: 4px;">Adventure Awaits Updated</div>
               </div>
               <div>
                 <span style="font-weight: 500; color: #191B34;">Primary section</span>
-                <div>news (News)</div>
+                <div style="color: #656A86; margin-top: 4px;">news (News)</div>
               </div>
             </div>
           </div>
@@ -589,15 +938,15 @@
           <div class="section-content open" id="section-headlines">
             <div class="form-group">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <label class="form-label" style="margin-bottom: 0;">Working headline <span style="color: #656A86;">(required)</span></label>
-                <span style="font-size: 12px; color: #656A86;">61/500 characters</span>
+                <label class="form-label" style="margin-bottom: 0;">Working headline <span style="color: #656A86; font-weight: 400;">(required)</span></label>
+                <span style="font-size: 12px; color: #656A86; font-weight: 500;">61/500 characters</span>
               </div>
               <input type="text" class="form-input" value="The 2021 Formula 1 World Championship: A Season Like No Other">
             </div>
             <div class="form-group">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                 <label class="form-label" style="margin-bottom: 0;">Web</label>
-                <span style="font-size: 12px; color: #656A86;">0/50 characters</span>
+                <span style="font-size: 12px; color: #656A86; font-weight: 500;">0/50 characters</span>
               </div>
               <input type="text" class="form-input" placeholder="Add web headline">
             </div>
@@ -611,7 +960,7 @@
           <button class="btn-icon">↶</button>
           <button class="btn-icon">↷</button>
           <div style="width: 1px; height: 24px; background-color: #E0E3EE; margin: 0 4px;"></div>
-          <select style="padding: 6px 12px; border: 1px solid #E0E3EE; border-radius: 4px; font-size: 14px;">
+          <select>
             <option>Heading 3</option>
           </select>
           <button class="btn-icon"><strong>B</strong></button>
@@ -620,10 +969,295 @@
         </div>
         
         <div style="position: absolute; top: 24px; right: 48px; font-size: 12px;">
-          <a href="#" style="color: #1F3CD0; text-decoration: none;">Back to old editor</a>
+          <a href="#" style="color: #1F3CD0; text-decoration: none; font-weight: 500; transition: color 200ms ease;" onmouseover="this.style.color='#091678'" onmouseout="this.style.color='#1F3CD0'">Back to old editor</a>
         </div>
 
         <div style="max-width: 800px;" id="article-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Center Application -->
+  <div class="data-center-container" id="data-center">
+    <!-- Top Navigation -->
+    <div class="top-nav">
+      <div class="top-nav-left">
+        <div class="logo-area">
+          <div class="logo-circle"></div>
+          <span style="font-size: 20px; font-weight: 500;">Data Center</span>
+        </div>
+        <nav class="nav-links">
+          <a href="#" class="nav-link">Content</a>
+          <a href="#" class="nav-link">Events</a>
+          <a href="#" class="nav-link">Settings</a>
+        </nav>
+      </div>
+      <div class="top-nav-right">
+        <div class="sandbox-badge">Sandbox</div>
+        <span style="font-size: 14px; font-weight: 500;">Aaron Schmidt</span>
+        <div class="user-avatar">AS</div>
+      </div>
+    </div>
+
+    <!-- Sub Header -->
+    <div class="sub-header">
+      <div class="sub-header-left">
+        <button class="btn-icon" onclick="returnToComposer()">←</button>
+        <div>
+          <div style="font-size: 16px; font-weight: 500; color: #191B34;" id="event-detail-title">
+            Event Details
+          </div>
+          <div style="font-size: 12px; color: #656A86; margin-top: 2px; font-weight: 500;" id="event-detail-meta">
+            Last updated: --
+          </div>
+        </div>
+      </div>
+      <div class="sub-header-right">
+        <button class="btn-icon">⚙</button>
+        <button class="btn-icon">⋮</button>
+        <button class="btn btn-neutral" onclick="returnToComposer()">Cancel</button>
+        <button class="btn btn-primary">Save Changes</button>
+        <button class="btn btn-publish">Publish</button>
+      </div>
+    </div>
+
+    <!-- Detail Content -->
+    <div class="detail-content">
+      <div class="detail-header">
+        <h1 class="detail-title" id="detail-page-title">Event Details</h1>
+      </div>
+
+      <!-- Basic Information Section -->
+      <div class="detail-section">
+        <h2 class="detail-section-title">Basic Information</h2>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+          <div class="detail-field">
+            <label class="detail-field-label">Status</label>
+            <select class="detail-field-input" id="edit-status">
+              <option value="DRAFT">Draft</option>
+              <option value="PUBLISHED">Published</option>
+            </select>
+          </div>
+
+          <div class="detail-field">
+            <label class="detail-field-label">Language</label>
+            <select class="detail-field-input" id="edit-language">
+              <option value="English">English</option>
+              <option value="Spanish">Spanish</option>
+              <option value="French">French</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="detail-field">
+          <label class="detail-field-label">Display Name</label>
+          <input type="text" class="detail-field-input" id="edit-title" placeholder="Enter display name">
+        </div>
+
+        <div class="detail-field">
+          <label class="detail-field-label">Slug (Unique)</label>
+          <input type="text" class="detail-field-input" id="edit-slug" placeholder="event-slug">
+          <div style="font-size: 14px; color: #656A86; margin-top: 8px; font-weight: 400;">URL-friendly identifier used for routing and references</div>
+        </div>
+
+        <div class="detail-field">
+          <label class="detail-field-label">ID</label>
+          <input type="text" class="detail-field-input" id="edit-id" readonly style="background-color: #F8FAFD; cursor: not-allowed;">
+          <div style="font-size: 14px; color: #656A86; margin-top: 8px; font-weight: 400;">Unique numeric identifier assigned by the system</div>
+        </div>
+      </div>
+
+      <!-- Schema & Version Section -->
+      <div class="detail-section">
+        <h2 class="detail-section-title">Schema & Version</h2>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+          <div class="detail-field">
+            <label class="detail-field-label">Schema ID</label>
+            <input type="text" class="detail-field-input" id="edit-schema-id" value="event" readonly style="background-color: #F8FAFD; cursor: not-allowed;">
+            <div style="font-size: 14px; color: #656A86; margin-top: 8px; font-weight: 400;">Content type schema identifier</div>
+          </div>
+
+          <div class="detail-field">
+            <label class="detail-field-label">Schema Version</label>
+            <input type="text" class="detail-field-input" id="edit-schema-version" value="1.0.2" readonly style="background-color: #F8FAFD; cursor: not-allowed;">
+            <div style="font-size: 14px; color: #656A86; margin-top: 8px; font-weight: 400;">Current schema version for compatibility</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Event Details Section -->
+      <div class="detail-section">
+        <h2 class="detail-section-title">Event Details</h2>
+        
+        <div class="detail-field">
+          <label class="detail-field-label">Category</label>
+          <input type="text" class="detail-field-input" id="edit-category" placeholder="Enter category">
+        </div>
+
+        <div class="detail-field">
+          <label class="detail-field-label">Description</label>
+          <textarea class="detail-field-textarea" id="edit-description" placeholder="Short description with no formatting"></textarea>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+          <div class="detail-field">
+            <label class="detail-field-label">Source</label>
+            <select class="detail-field-input" id="edit-source">
+              <option value="Eventbrite">Eventbrite</option>
+              <option value="Manual">Manual</option>
+              <option value="Import">Import</option>
+            </select>
+          </div>
+
+          <div class="detail-field">
+            <label class="detail-field-label">Event Status</label>
+            <select class="detail-field-input" id="edit-event-status">
+              <option value="Confirmed">Confirmed</option>
+              <option value="Tentative">Tentative</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+          <div class="detail-field">
+            <label class="detail-field-label">Priority</label>
+            <input type="text" class="detail-field-input" id="edit-priority" placeholder="1">
+          </div>
+
+          <div class="detail-field">
+            <label class="detail-field-label">Price</label>
+            <input type="text" class="detail-field-input" id="edit-price" placeholder="free">
+          </div>
+        </div>
+
+        <div class="detail-field">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 16px; font-weight: 500; color: #191B34;">
+            <input type="checkbox" id="edit-all-day" style="width: 20px; height: 20px; cursor: pointer; accent-color: #1F3CD0;">
+            All Day Event
+          </label>
+        </div>
+      </div>
+
+      <!-- Featured Image Section -->
+      <div class="detail-section">
+        <h2 class="detail-section-title">Featured Image</h2>
+        
+        <div style="border: 2px dashed #BEC2D5; border-radius: 4px; padding: 48px; text-align: center; background-color: #FFFFFF;">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 24px;">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#656A86" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            <div style="font-size: 16px; color: #656A86; font-weight: 500;">No image selected</div>
+            <button class="btn" style="background-color: #FFFFFF; border: 2px solid #20A453; color: #20A453; font-weight: 500;" onmouseover="this.style.backgroundColor='#D2FAD2'" onmouseout="this.style.backgroundColor='#FFFFFF'">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+              </svg>
+              Browse PhotoCenter
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Organizer Information Section -->
+      <div class="detail-section">
+        <h2 class="detail-section-title">Organizer Information</h2>
+        
+        <div class="detail-field">
+          <label class="detail-field-label">Organizer Name</label>
+          <input type="text" class="detail-field-input" id="edit-organizer-name" placeholder="Enter organizer name">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+          <div class="detail-field">
+            <label class="detail-field-label">Email</label>
+            <input type="email" class="detail-field-input" id="edit-organizer-email" placeholder="Enter email">
+          </div>
+
+          <div class="detail-field">
+            <label class="detail-field-label">Website URL</label>
+            <input type="url" class="detail-field-input" id="edit-organizer-url" placeholder="Enter website URL">
+          </div>
+        </div>
+      </div>
+
+      <!-- Event Dates & Times Section -->
+      <div class="detail-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <h2 class="detail-section-title" style="margin-bottom: 0;">Event Dates & Times</h2>
+          <button class="btn btn-neutral">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Add Event
+          </button>
+        </div>
+        
+        <div style="border: 1px solid #E0E3EE; border-radius: 4px; padding: 24px; background-color: #FFFFFF;">
+          <div style="font-size: 16px; font-weight: 600; color: #191B34; margin-bottom: 16px;">Event 1</div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <div class="detail-field">
+              <label class="detail-field-label">Start Date & Time</label>
+              <input type="text" class="detail-field-input" id="edit-start-date" placeholder="MM/DD/YYYY, HH:MM">
+            </div>
+
+            <div class="detail-field">
+              <label class="detail-field-label">End Date & Time</label>
+              <input type="text" class="detail-field-input" id="edit-end-date" placeholder="MM/DD/YYYY, HH:MM">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Location & Links Section -->
+      <div class="detail-section">
+        <h2 class="detail-section-title">Location & Links</h2>
+        
+        <div class="detail-field">
+          <label class="detail-field-label">Location</label>
+          <input type="text" class="detail-field-input" id="edit-location" placeholder="Enter location">
+        </div>
+
+        <div class="detail-field">
+          <label class="detail-field-label">Event URL</label>
+          <input type="url" class="detail-field-input" id="edit-event-url" placeholder="https://example.com/event">
+        </div>
+      </div>
+
+      <!-- System Information Section -->
+      <div class="detail-section">
+        <h2 class="detail-section-title">System Information</h2>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+          <div class="detail-field">
+            <label class="detail-field-label">Revision</label>
+            <input type="text" class="detail-field-input" id="detail-revision" readonly style="background-color: #F8FAFD; cursor: not-allowed;">
+          </div>
+
+          <div class="detail-field">
+            <label class="detail-field-label">Author</label>
+            <input type="text" class="detail-field-input" id="detail-author" readonly style="background-color: #F8FAFD; cursor: not-allowed;">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+          <div class="detail-field">
+            <label class="detail-field-label">Create Date</label>
+            <input type="text" class="detail-field-input" id="detail-create-date" readonly style="background-color: #F8FAFD; cursor: not-allowed;">
+          </div>
+
+          <div class="detail-field">
+            <label class="detail-field-label">Last Modified</label>
+            <input type="text" class="detail-field-input" id="detail-modified" readonly style="background-color: #F8FAFD; cursor: not-allowed;">
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -632,19 +1266,19 @@
   <div class="modal-overlay" id="data-modal">
     <div class="modal-content">
       <div class="modal-sidebar">
-        <h3 style="font-size: 12px; font-weight: 600; color: #656A86; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px;">CONTENT TYPES</h3>
+        <h3>CONTENT TYPES</h3>
         <select class="form-input" style="margin-bottom: 24px;">
           <option>Events</option>
         </select>
-        <h3 style="font-size: 12px; font-weight: 600; color: #656A86; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px;">SORT BY</h3>
+        <h3>SORT BY</h3>
         <select class="form-input">
           <option>Last updated date</option>
         </select>
       </div>
       <div class="modal-main">
         <div class="modal-header">
-          <h2 style="font-size: 24px; font-weight: 600; color: #191B34; margin: 0;">Events</h2>
-          <button class="btn-icon" onclick="closeDataModal()">×</button>
+          <h2>Events</h2>
+          <button class="btn-icon" onclick="closeDataModal()" style="font-size: 24px; padding: 4px; width: 32px; height: 32px;">×</button>
         </div>
         <div class="event-list" id="event-list"></div>
       </div>
@@ -938,22 +1572,22 @@
         item.className = 'event-item';
         item.innerHTML = `
           <div>
-            <div style="font-size: 18px; font-weight: 600; color: #191B34; margin-bottom: 8px;">${event.title}</div>
+            <div class="event-item-title">${event.title}</div>
             ${event.hasEventbrite ? '<div class="event-badge">✓ Eventbrite</div>' : ''}
             <div style="display: flex; gap: 8px; align-items: center; margin-top: 12px;">
-              <span style="font-size: 14px; color: #656A86;">Workflow status</span>
+              <span style="font-size: 14px; color: #656A86; font-weight: 500;">Workflow status</span>
               <span class="status-badge ${event.status === 'PUBLISHED' ? 'status-published' : 'status-draft'}">${event.status}</span>
-              <span style="padding: 4px 12px; background-color: #FFFFFF; border: 1px solid #E0E3EE; color: #191B34; border-radius: 4px; font-size: 12px; font-weight: 500;">${event.category}</span>
+              <span class="category-badge">${event.category}</span>
             </div>
             <div style="display: flex; gap: 12px; margin-top: 12px;">
               <button class="btn btn-primary" onclick="selectEvent(${i})">Select</button>
-              <button class="btn btn-neutral">Preview</button>
-              <button class="btn btn-neutral">Edit</button>
+              <button class="btn btn-neutral" onclick="previewEvent(${i})">Preview</button>
+              <button class="btn btn-neutral" onclick="editEvent(${i})">Edit</button>
             </div>
           </div>
-          <div style="font-size: 14px; color: #191B34;">${event.lastModified}</div>
-          <div style="font-size: 14px; color: #191B34;">${event.published}</div>
-          <div style="font-size: 14px; color: #656A86;">${event.author}</div>
+          <div style="font-size: 14px; color: #191B34; font-weight: 500;">${event.lastModified}</div>
+          <div style="font-size: 14px; color: #191B34; font-weight: 500;">${event.published}</div>
+          <div style="font-size: 14px; color: #656A86; font-weight: 500;">${event.author}</div>
         `;
         container.appendChild(item);
       });
@@ -965,6 +1599,64 @@
         closeDataModal();
         renderArticle();
       }
+    }
+
+    function previewEvent(eventIndex) {
+      // Preview functionality
+    }
+
+    function editEvent(eventIndex) {
+      const event = events[eventIndex];
+      
+      // Hide composer, show data center
+      document.getElementById('composer').classList.add('hidden');
+      document.getElementById('data-center').classList.add('visible');
+      
+      // Populate header
+      document.getElementById('event-detail-title').textContent = event.title;
+      document.getElementById('event-detail-meta').textContent = `Last updated: ${event.lastModified}`;
+      document.getElementById('detail-page-title').textContent = event.title;
+      
+      // Populate Basic Information
+      document.getElementById('edit-status').value = event.status;
+      document.getElementById('edit-language').value = 'English';
+      document.getElementById('edit-title').value = event.title;
+      document.getElementById('edit-slug').value = event.title.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+      document.getElementById('edit-id').value = '109391';
+      
+      // Populate Event Details
+      document.getElementById('edit-category').value = event.category;
+      document.getElementById('edit-description').value = `Details about ${event.title}`;
+      document.getElementById('edit-source').value = event.hasEventbrite ? 'Eventbrite' : 'Manual';
+      document.getElementById('edit-event-status').value = 'Confirmed';
+      document.getElementById('edit-priority').value = '1';
+      document.getElementById('edit-price').value = 'free';
+      
+      // Populate Organizer Information
+      document.getElementById('edit-organizer-name').value = 'Running Club NYC';
+      
+      // Populate Event Dates & Times
+      document.getElementById('edit-start-date').value = '06/15/2025, 09:00';
+      document.getElementById('edit-end-date').value = '06/15/2025, 05:00';
+      
+      // Populate Location & Links
+      document.getElementById('edit-location').value = 'Central Park, NYC';
+      document.getElementById('edit-event-url').value = 'https://example.com/event';
+      
+      // Populate System Information
+      document.getElementById('detail-revision').value = '1';
+      document.getElementById('detail-author').value = event.author;
+      document.getElementById('detail-create-date').value = '11/11/2025, 07:09 PM';
+      document.getElementById('detail-modified').value = event.lastModified;
+      
+      // Close the modal
+      closeDataModal();
+    }
+
+    function returnToComposer() {
+      // Hide data center, show composer
+      document.getElementById('data-center').classList.remove('visible');
+      document.getElementById('composer').classList.remove('hidden');
     }
 
     // Close menu when clicking outside
